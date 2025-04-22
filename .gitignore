@@ -1,0 +1,49 @@
+# 忽略 Python 编译文件
+__pycache__/
+*.py[cod]
+
+# 忽略虚拟环境
+venv/
+ENV/
+env/
+.venv/
+
+# 忽略 IDE 和编辑器生成的文件
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 忽略打包工具生成的文件
+build/
+dist/
+*.spec
+*.egg-info/
+
+# 忽略日志和缓存文件
+*.log
+*.tmp
+.cache/
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略敏感文件（如配置文件）
+*.env
+.env.*
+!.env.example
+
+# 忽略测试和覆盖率报告
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# 忽略 Jupyter Notebook 检查点
+.ipynb_checkpoints/
+
+# 忽略 cx_Freeze 打包生成的中间文件
+_cxFreeze/
+
+.ropeproject
