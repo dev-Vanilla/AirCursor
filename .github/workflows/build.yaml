@@ -1,0 +1,83 @@
+name: Build and Release for Multiple Platforms
+
+on:
+  push:
+    branches:
+      - release  # 仅当推送代码到 release 分支时触发
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact_name: AirCursor-Windows.exe
+            package_command: |
+              python setup.py build
+              choco install innosetup -y
+              iscc installer.iss
+          - os: macos-latest
+            artifact_name: AirCursor-Mac.dmg
+            package_command: |
+              python setup.py build
+              brew install create-dmg
+              create-dmg build/exe.macosx-*/AirCursor.app build/AirCursor.dmg
+          - os: ubuntu-latest
+            artifact_name: AirCursor-Ubuntu.deb
+            package_command: |
+              python setup.py build
+              sudo apt-get update
+              sudo apt-get install -y dpkg rpm
+              dpkg-deb --build build/exe.linux-*/AirCursor
+              mv AirCursor.deb AirCursor-Ubuntu.deb
+          - os: ubuntu-latest
+            artifact_name: AirCursor-Fedora.rpm
+            package_command: |
+              python setup.py build
+              sudo apt-get update
+              sudo apt-get install -y dpkg rpm
+              rpmbuild -bb aircursor.spec
+              mv ~/rpmbuild/RPMS/x86_64/aircursor*.rpm AirCursor-Fedora.rpm
+
+    steps:
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # 安装依赖项
+      - name: Install dependencies
+        run: |
+          pip install cx_Freeze  # 明确安装 cx_Freeze
+          pip install -r requirements.txt
+
+      # 获取版本号（从 setup.py 中提取）
+      - name: Get version from setup.py
+        id: get_version
+        run: |
+          echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+
+      # 打包应用程序
+      - name: Build Application
+        run: |
+          ${{ matrix.package_command }}
+
+      # 上传构建结果到 GitHub Releases 草稿
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          body: |
+            This is a draft release for version ${{ env.VERSION }}.
+          draft: true  # 将发布设置为草稿
+          files: |
+            ${{ matrix.artifact_name }}

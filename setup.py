@@ -39,8 +39,8 @@ executables = [
 # 打包设置
 setup(
     name="AirCursor",
-    version="1.0.0",
-    description="AirCursor - Gesture Control Application",
+    version="0.0.1",
+    description="AirCursor - Novel Human-Computer Interaction",
     options={"build_exe": build_exe_options},
     executables=executables,
 )

@@ -6,7 +6,7 @@ AirCursor is a gesture-controlled mouse application built with PySide6 and Media
 ### Key Features
 - **Real-time Gesture Recognition**: Supports hand landmark detection.
 - **Mouse Operations**:
-  - Point with your index finger to move the cursor.
+  - Move the cursor with your index finger, tap to click
   - Pinch your thumb and index finger to trigger a click.
   - Swipe gestures for scrolling.
 - **System Tray Support**: Minimize to the system tray.
@@ -25,10 +25,10 @@ Make sure you have installed the following dependencies:
 #### Quick Start
 Clone the project and run:
 ```bash
-git clone https://github.com/yourusername/AirCursor.git
+git clone https://github.com/dev-Vanilla/AirCursor.git
 cd AirCursor
 pip install -r requirements.txt
-python main.py
+python3 main.py
 ```
 
 ### Usage Instructions
