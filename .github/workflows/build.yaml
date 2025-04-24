@@ -35,6 +35,12 @@ jobs:
           pip install cxfreeze
           pip install -r requirements.txt
 
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          pip install toml
+          echo "VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')" >> $GITHUB_ENV
+
       - name: Build Application
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
@@ -46,21 +52,10 @@ jobs:
             cxfreeze bdist_dmg
           fi
 
-      - name: Get version from pyproject.toml
-        id: get_version
-        run: |
-          pip install toml
-          echo "VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')" >> $GITHUB_ENV
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}
-          path: |
-            dist/*.deb
-            dist/*.rpm
-            dist/*.msi
-            dist/*.dmg
+          for file in dist/*; do
+            ext="${file##*.}"  # Extract the file extension
+            mv "$file" "dist/AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.$ext"
+          done
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
