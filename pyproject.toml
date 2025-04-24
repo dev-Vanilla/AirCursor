@@ -1,6 +1,6 @@
 [project]
 name = "AirCursor"
-version = "0.0.1"
+version = "0.0.1-alpha"
 description = "Interact with your PC directly with your hands!"
 
 [tool.cxfreeze]
