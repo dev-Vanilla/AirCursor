@@ -3,10 +3,15 @@ name = "AirCursor"
 version = "0.0.1-alpha"
 description = "Interact with your PC directly with your hands!"
 
+[tool.cxfreeze]
+executables = [
+    {script = "main.py", base = "gui", icon = "resources/imgs/icon"}
+]
+
 # macOS DMG 特定配置
 [tool.cx_Freeze.bdist_dmg]
 volume_label = "AirCursor Installer"  # 磁盘映像的名称
-show_icon_preview = true                      # 图标大小
+show_icon_preview = true 
 applications_shortcut = true         # 添加到 /Applications 快捷方式
 
 # Windows 特定配置
