@@ -1,5 +1,5 @@
 mediapipe==0.10.21
 opencv-python==4.11.0.86
 PyAutoGUI==0.9.54
+pynput==1.8.1
 PySide6==6.9.0
-
