@@ -1,4 +1,4 @@
-name: Build and Release for Multiple Platforms
+name: Build and Release for Multiple Platforms and Architectures
 
 on:
   push:
@@ -10,66 +10,116 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
         include:
+          # Windows (x64)
           - os: windows-latest
-            artifact_name: AirCursor-Windows.exe
-            package_command: |
-              python setup.py build
-              choco install innosetup -y
-              iscc installer.iss
+            artifact_name: AirCursor-Windows-x86_64.msi
+            command: bdist_msi
+            icon_extension: "ico"
+            arch: x64
+          # Windows (ARM64)
+          - os: windows-latest
+            artifact_name: AirCursor-Windows-ARM64.msi
+            command: bdist_msi
+            icon_extension: "ico"
+            arch: arm64
+
+          # macOS (x64) - .app
           - os: macos-latest
-            artifact_name: AirCursor-Mac.dmg
-            package_command: |
-              python setup.py build
-              brew install create-dmg
-              create-dmg build/exe.macosx-*/AirCursor.app build/AirCursor.dmg
+            artifact_name: AirCursor-Mac-x86_64.app
+            command: bdist_mac
+            icon_extension: "icns"
+            arch: x64
+          # macOS (ARM64) - .app
+          - os: macos-latest
+            artifact_name: AirCursor-Mac-ARM64.app
+            command: bdist_mac
+            icon_extension: "icns"
+            arch: arm64
+
+          # macOS (x64) - .dmg
+          - os: macos-latest
+            artifact_name: AirCursor-Mac-x86_64.dmg
+            command: bdist_dmg
+            icon_extension: "icns"
+            arch: x64
+          # macOS (ARM64) - .dmg
+          - os: macos-latest
+            artifact_name: AirCursor-Mac-ARM64.dmg
+            command: bdist_dmg
+            icon_extension: "icns"
+            arch: arm64
+
+          # Ubuntu (x64) - .deb
           - os: ubuntu-latest
-            artifact_name: AirCursor-Ubuntu.deb
-            package_command: |
-              python setup.py build
-              sudo apt-get update
-              sudo apt-get install -y dpkg rpm
-              dpkg-deb --build build/exe.linux-*/AirCursor
-              mv AirCursor.deb AirCursor-Ubuntu.deb
+            artifact_name: AirCursor-Ubuntu-x86_64.deb
+            command: bdist_deb
+            icon_extension: "svg"
+            arch: x64
+          # Ubuntu (ARM64) - .deb
           - os: ubuntu-latest
-            artifact_name: AirCursor-Fedora.rpm
-            package_command: |
-              python setup.py build
-              sudo apt-get update
-              sudo apt-get install -y dpkg rpm
-              rpmbuild -bb aircursor.spec
-              mv ~/rpmbuild/RPMS/x86_64/aircursor*.rpm AirCursor-Fedora.rpm
+            artifact_name: AirCursor-Ubuntu-ARM64.deb
+            command: bdist_deb
+            icon_extension: "svg"
+            arch: arm64
+
+          # Fedora (x64) - .rpm
+          - os: ubuntu-latest
+            artifact_name: AirCursor-Fedora-x86_64.rpm
+            command: bdist_rpm
+            icon_extension: "svg"
+            arch: x64
+          # Fedora (ARM64) - .rpm
+          - os: ubuntu-latest
+            artifact_name: AirCursor-Fedora-ARM64.rpm
+            command: bdist_rpm
+            icon_extension: "svg"
+            arch: arm64
 
     steps:
-      # 检出代码
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 设置 Python 环境
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+          architecture: ${{ matrix.arch }}
 
-      # 安装依赖项
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
-          pip install cx_Freeze  # 明确安装 cx_Freeze
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            sudo apt-get update
+            sudo apt-get install -y linux-headers-$(uname -r)
+          elif [ "${{ matrix.os }}" == "macos-latest" ] && [ "${{ matrix.command }}" == "bdist_dmg" ]; then
+            brew install create-dmg
+          fi
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip cx_Freeze
           pip install -r requirements.txt
 
-      # 获取版本号（从 setup.py 中提取）
-      - name: Get version from setup.py
-        id: get_version
-        run: |
-          echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
-
-      # 打包应用程序
       - name: Build Application
         run: |
-          ${{ matrix.package_command }}
+          python -m build --${{ matrix.command }}
+          if [ "${{ matrix.os }}" == "macos-latest" ] && [ "${{ matrix.command }}" == "bdist_mac" ]; then
+            create-dmg dist/AirCursor-${{ matrix.arch }}.app dist/AirCursor-${{ matrix.arch }}.dmg
+          fi
 
-      # 上传构建结果到 GitHub Releases 草稿
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          pip install toml
+          echo "VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')" >> $GITHUB_ENV
+
+      - name: Validate build artifacts
+        run: |
+          if [ ! -f "dist/${{ matrix.artifact_name }}" ]; then
+            echo "Error: Artifact dist/${{ matrix.artifact_name }} not found!"
+            exit 1
+          fi
+
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
@@ -80,4 +130,4 @@ jobs:
             This is a draft release for version ${{ env.VERSION }}.
           draft: true  # 将发布设置为草稿
           files: |
-            ${{ matrix.artifact_name }}
+            dist/${{ matrix.artifact_name }}

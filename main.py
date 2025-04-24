@@ -1,3 +1,4 @@
+import os
 import sys  # Only needed for access to command line arguments
 import threading
 import queue
@@ -6,11 +7,12 @@ from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCl
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QSystemTrayIcon, QMenu,
-    QVBoxLayout, QHBoxLayout, QStackedWidget,
+    QVBoxLayout, QHBoxLayout, QGridLayout, QStackedWidget,
     QLabel, QLineEdit, QComboBox, QSlider, QPushButton, QDial
 )
 from control import Controller
 from recognize  import Recognizer
+from utils import icon_path, logo_path, model_path
 
 ORGANIZATION_NAME = "aircursor"
 APPLICATION_NAME = "AirCursor"
@@ -40,7 +42,7 @@ class MainWindow(QMainWindow):
         # When you subclass a Qt class you must always call the super __init__ function to allow Qt to set up the object.
         super().__init__()
         self.setWindowTitle("AirCursor")
-        self.setWindowIcon(QIcon("resources/imgs/1024.png"))  # 设置窗口图标
+        self.setWindowIcon(QIcon(icon_path))  # 设置窗口图标
         self.settings = QSettings(ORGANIZATION_NAME, APPLICATION_NAME)  # 初始化 QSettings
         self.initialize_settings()  # 加载配置（如果不存在则使用默认值）
 
@@ -56,7 +58,7 @@ class MainWindow(QMainWindow):
         # 初始化 Controller
         self.controller = Controller(self.settings)
         self.recognizer = Recognizer(
-            model_path="model/hand_landmarker.task",
+            model_path = model_path,
             settings = self.settings,
             event_manager = self.event_manager
         )
@@ -88,7 +90,9 @@ class MainWindow(QMainWindow):
 
         # 创建页面
         for page_name in buttons:
-            if page_name == "LiveStream":
+            if page_name == "首页":
+                page = self.create_main_page()
+            elif page_name == "LiveStream":
                 # Live Stream Section
                 self.livestream = QLabel()
                 self.livestream.setText("实时预览将在此显示")  # Placeholder text
@@ -167,7 +171,7 @@ class MainWindow(QMainWindow):
             icon_color = QColor(Qt.white)  # 白色图标
 
         # 加载 SVG 图标并动态着色
-        renderer = QSvgRenderer("resources/imgs/logo.svg")  # 替换为你的 SVG 文件路径
+        renderer = QSvgRenderer(logo_path)  # 替换为你的 SVG 文件路径
         pixmap = QPixmap(QSize(256, 256))  # 高分辨率图标
         pixmap.fill(Qt.transparent)
 
@@ -179,6 +183,46 @@ class MainWindow(QMainWindow):
 
         # 设置托盘图标
         self.tray_icon.setIcon(QIcon(pixmap))
+
+    def create_main_page(self):
+            main_page = QWidget()
+            # Configuration Section
+            main_layout = QVBoxLayout()
+
+            demo_layout = QGridLayout()
+
+
+            move_img= QLabel("This is a demo picture.")
+            move_text=QLabel("<b>Move:</b> Move your index finger to control the cursor.")
+            demo_layout.addWidget(move_img, 0, 0)
+            demo_layout.addWidget(move_text, 1, 0)
+            
+            click_img= QLabel("This is a demo picture.")
+            click_text=QLabel("<b>Click:</b> Tap your index finger down to perform a click.")
+            demo_layout.addWidget(click_img, 0, 1)
+            demo_layout.addWidget(click_text, 1, 1)
+
+            drag_img= QLabel("This is a demo picture.")
+            drag_text=QLabel("<b>Drag:</b> Pinch with your thumb and index finger to start dragging.")
+            demo_layout.addWidget(drag_img, 2, 0)
+            demo_layout.addWidget(drag_text, 3, 0)
+
+            scroll_img= QLabel("This is a demo picture.")
+            scroll_text=QLabel("<b>Scroll:</b> Use your index and middle fingers to scroll.")
+            demo_layout.addWidget(scroll_img, 2, 1)
+            demo_layout.addWidget(scroll_text, 3, 1)
+
+            config_img= QLabel("This is a demo picture.")
+            config_text=QLabel("<b>Settings:</b> Go to the Settings page to customize sensitivity and other options.")
+            demo_layout.addWidget(config_img, 4, 0)
+            demo_layout.addWidget(config_text, 5, 0)
+            
+
+            main_layout.addLayout(demo_layout)
+
+            main_page.setLayout(main_layout)
+
+            return main_page
 
     def create_config_page(self):
         """创建配置页面布局"""
