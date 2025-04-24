@@ -56,6 +56,24 @@ jobs:
             cxfreeze bdist_dmg
           fi
 
+      - name: List File Tree
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            if [ -d "build" ]; then dir /s build\; fi
+            if [ -d "dist" ]; then dir /s dist\; fi
+          else
+            if [ -d "build" ]; then ls -R build/; fi
+            if [ -d "dist" ]; then ls -R dist/; fi
+          fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: |
+            dist/
+            build/
+
       # - name: File Standardization
       #   run: |
       #     for file in dist/*; do
@@ -63,14 +81,14 @@ jobs:
       #       mv "$file" "dist/AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.$ext"
       #     done
 
-      - name: Create Draft Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
-        with:
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
-          body: |
-            This is a draft release for version ${{ env.VERSION }}.
-          draft: true  # 将发布设置为草稿
-          files: |
-            dist/*
+      # - name: Create Draft Release
+      #   uses: softprops/action-gh-release@v1
+      #   if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
+      #   with:
+      #     tag_name: ${{ env.VERSION }}
+      #     name: Release ${{ env.VERSION }}
+      #     body: |
+      #       This is a draft release for version ${{ env.VERSION }}.
+      #     draft: true  # 将发布设置为草稿
+      #     files: |
+      #       dist/*
