@@ -5,7 +5,7 @@ description = "Interact with your PC directly with your hands!"
 
 [tool.cxfreeze]
 executables = [
-    {script = "main.py", base = "gui", icon = "resources/imgs/icon"}
+    {script = "main.py", target_name = "AirCursor", base = "gui", icon = "resources/imgs/icon"}
 ]
 
 # macOS DMG 特定配置

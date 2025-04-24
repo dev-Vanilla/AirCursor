@@ -27,7 +27,7 @@ jobs:
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             sudo apt update
-            sudo apt install -y alien fakeroot
+            sudo apt install -y alien fakeroot libwayland-egl1
           elif [ "${{ matrix.os }}" == "fedora-latest" ]; then
             sudo dnf install rpm
           fi
@@ -56,10 +56,12 @@ jobs:
             cxfreeze bdist_dmg
           fi
 
-          for file in dist/*; do
-            ext="${file##*.}"  # Extract the file extension
-            mv "$file" "dist/AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.$ext"
-          done
+      # - name: File Standardization
+      #   run: |
+      #     for file in dist/*; do
+      #       ext="${file##*.}"  # Extract the file extension
+      #       mv "$file" "dist/AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.$ext"
+      #     done
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
@@ -71,4 +73,4 @@ jobs:
             This is a draft release for version ${{ env.VERSION }}.
           draft: true  # 将发布设置为草稿
           files: |
-            dist/*${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.*
+            dist/*
