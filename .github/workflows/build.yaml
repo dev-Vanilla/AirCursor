@@ -45,14 +45,20 @@ jobs:
           pip install toml
           echo "VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')" >> $GITHUB_ENV
 
-      - name: Build Application
+      - name: Build Application (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          cxfreeze bdist_msi
+
+      - name: Build Application (macOS/Linux)
+        if: matrix.os != 'windows-latest'
+        shell: bash
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             cxfreeze bdist_deb
           elif [ "${{ matrix.os }}" == "fedora-latest" ]; then
             cxfreeze bdist_rpm
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            cxfreeze bdist_msi
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
             cxfreeze bdist_dmg
           fi
