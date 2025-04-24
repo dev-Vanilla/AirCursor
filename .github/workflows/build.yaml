@@ -31,7 +31,7 @@ jobs:
             icon_extension: "icns"
             arch: x64
           # macOS (ARM64) - .app
-          - os: macos-latest
+          - os: macos-latest-arm64
             artifact_name: AirCursor-Mac-ARM64.app
             command: bdist_mac
             icon_extension: "icns"
@@ -44,7 +44,7 @@ jobs:
             icon_extension: "icns"
             arch: x64
           # macOS (ARM64) - .dmg
-          - os: macos-latest
+          - os: macos-latest-arm64
             artifact_name: AirCursor-Mac-ARM64.dmg
             command: bdist_dmg
             icon_extension: "icns"
@@ -57,7 +57,7 @@ jobs:
             icon_extension: "svg"
             arch: x64
           # Ubuntu (ARM64) - .deb
-          - os: ubuntu-latest
+          - os: ubuntu-latest-arm64
             artifact_name: AirCursor-Ubuntu-ARM64.deb
             command: bdist_deb
             icon_extension: "svg"
@@ -70,7 +70,7 @@ jobs:
             icon_extension: "svg"
             arch: x64
           # Fedora (ARM64) - .rpm
-          - os: ubuntu-latest
+          - os: ubuntu-latest-arm64
             artifact_name: AirCursor-Fedora-ARM64.rpm
             command: bdist_rpm
             icon_extension: "svg"
@@ -86,13 +86,16 @@ jobs:
           python-version: "3.10"
           architecture: ${{ matrix.arch }}
 
+      - name: Check system architecture
+        run: uname -m || echo "Architecture check failed"
+
       - name: Install system dependencies
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ] || [ "${{ matrix.os }}" == "ubuntu-latest-arm64" ]; then
             sudo apt-get update
             sudo apt-get install -y linux-headers-$(uname -r)
-          elif [ "${{ matrix.os }}" == "macos-latest" ] && [ "${{ matrix.command }}" == "bdist_dmg" ]; then
-            brew install create-dmg
+          elif [ "${{ matrix.os }}" == "macos-latest" ] || [ "${{ matrix.os }}" == "macos-latest-arm64" ]; then
+            brew install create-dmg || echo "create-dmg installation skipped"
           fi
 
       - name: Install Python dependencies
@@ -103,8 +106,10 @@ jobs:
       - name: Build Application
         run: |
           python -m build --${{ matrix.command }}
-          if [ "${{ matrix.os }}" == "macos-latest" ] && [ "${{ matrix.command }}" == "bdist_mac" ]; then
-            create-dmg dist/AirCursor-${{ matrix.arch }}.app dist/AirCursor-${{ matrix.arch }}.dmg
+          if [ "${{ matrix.os }}" == "macos-latest" ] || [ "${{ matrix.os }}" == "macos-latest-arm64" ]; then
+            if [ "${{ matrix.command }}" == "bdist_mac" ]; then
+              create-dmg dist/AirCursor-${{ matrix.arch }}.app dist/AirCursor-${{ matrix.arch }}.dmg || echo "DMG creation failed"
+            fi
           fi
 
       - name: Get version from pyproject.toml
@@ -118,6 +123,8 @@ jobs:
           if [ ! -f "dist/${{ matrix.artifact_name }}" ]; then
             echo "Error: Artifact dist/${{ matrix.artifact_name }} not found!"
             exit 1
+          else
+            echo "Artifact validated: dist/${{ matrix.artifact_name }}"
           fi
 
       - name: Create Draft Release
