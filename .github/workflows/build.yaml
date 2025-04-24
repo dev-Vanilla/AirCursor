@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "latest"
+          python-version: "3.12"
 
       - name: Install system dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
