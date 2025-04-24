@@ -25,8 +25,6 @@ jobs:
       - name: Install system dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          
-        run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             sudo apt update
             sudo apt install -y alien fakeroot
