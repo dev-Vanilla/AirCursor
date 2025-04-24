@@ -3,7 +3,7 @@ import sys
 
 # 设置基础参数
 base = None
-icon_path = resources/imgs/icon.svg  # 图标路径初始化
+icon_path = "resources/imgs/icon.svg"  # 图标路径初始化
 
 if sys.platform == "win32":
     base = "Win32GUI"  # 隐藏控制台窗口（仅适用于 Windows）
