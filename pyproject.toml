@@ -3,26 +3,6 @@ name = "AirCursor"
 version = "0.0.1-alpha"
 description = "Interact with your PC directly with your hands!"
 
-[tool.cxfreeze]
-executables = [
-    {script = "main.py", icon = "resources/imgs/icon"}
-]
-
-# 包含额外的资源文件
-include_files = [
-    ["resources", "resources"],
-    ["model", "model"],
-]
-
-# macOS 特定配置
-[tool.cx_Freeze.bdist_mac]
-bundle_name = "AirCursor"  # 应用程序名称
-iconfile = "resources/imgs/icon.icns"
-include_resources = [
-    ["resources", "resources"],
-    ["model", "model"],
-]
-
 # macOS DMG 特定配置
 [tool.cx_Freeze.bdist_dmg]
 volume_label = "AirCursor Installer"  # 磁盘映像的名称
