@@ -5,10 +5,7 @@ description = "Interact with your PC directly with your hands!"
 
 [tool.cxfreeze]
 executables = [
-    {
-        script = "main.py", 
-        icon = "resources/imgs/icon"
-    }
+    {script = "main.py", icon = "resources/imgs/icon"}
 ]
 
 # 包含额外的资源文件
