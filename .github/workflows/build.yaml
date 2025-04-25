@@ -63,19 +63,27 @@ jobs:
             cxfreeze bdist_dmg
           fi
 
-      - name: List File Tree (Windows)
+      - name: Find MSI files (Windows)
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          if exist build (dir /s build\)
-          if exist dist (dir /s dist\)
+          for /r %%f in (*.msi) do (
+            echo Found MSI file: %%f
+          )
 
-      - name: List File Tree (macOS/Linux)
-        if: matrix.os != 'windows-latest'
-        shell: bash
-        run: |
-          if [ -d "build" ]; then ls -R build/; fi
-          if [ -d "dist" ]; then ls -R dist/; fi
+      # - name: List File Tree (Windows)
+      #   if: matrix.os == 'windows-latest'
+      #   shell: cmd
+      #   run: |
+      #     if exist build (dir /s build\)
+      #     if exist dist (dir /s dist\)
+
+      # - name: List File Tree (macOS/Linux)
+      #   if: matrix.os != 'windows-latest'
+      #   shell: bash
+      #   run: |
+      #     if [ -d "build" ]; then ls -R build/; fi
+      #     if [ -d "dist" ]; then ls -R dist/; fi
 
       # - name: Upload Artifact
       #   uses: actions/upload-artifact@v4
