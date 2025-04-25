@@ -10,8 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
-        # os: [ubuntu-latest, fedora-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x64, arm64]
 
     steps:
@@ -26,12 +25,8 @@ jobs:
       - name: Install system dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            sudo apt update
-            sudo apt install -y alien fakeroot libwayland-egl1
-          elif [ "${{ matrix.os }}" == "fedora-latest" ]; then
-            sudo dnf install rpm
-          fi
+          sudo apt update
+          sudo apt install -y alien fakeroot libwayland-egl1 rpm
 
       - name: Install Python dependencies
         run: |
@@ -57,48 +52,34 @@ jobs:
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             cxfreeze bdist_deb
-          elif [ "${{ matrix.os }}" == "fedora-latest" ]; then
-            cxfreeze bdist_rpm
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
             cxfreeze bdist_dmg
           fi
 
-      - name: Find MSI files (Windows)
+      - name: Upload Artifact (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            build/*.dmg
+
+      - name: Upload Artifact (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            dist/*.deb
+            dist/*.rpm
+
+      - name: Upload Artifact (Windows)
         if: matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          for /r %%f in (*.msi) do (
-            echo Found MSI file: %%f
-          )
-
-      # - name: List File Tree (Windows)
-      #   if: matrix.os == 'windows-latest'
-      #   shell: cmd
-      #   run: |
-      #     if exist build (dir /s build\)
-      #     if exist dist (dir /s dist\)
-
-      # - name: List File Tree (macOS/Linux)
-      #   if: matrix.os != 'windows-latest'
-      #   shell: bash
-      #   run: |
-      #     if [ -d "build" ]; then ls -R build/; fi
-      #     if [ -d "dist" ]; then ls -R dist/; fi
-
-      # - name: Upload Artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-output
-      #     path: |
-      #       dist/
-      #       build/
-
-      # - name: File Standardization
-      #   run: |
-      #     for file in dist/*; do
-      #       ext="${file##*.}"  # Extract the file extension
-      #       mv "$file" "dist/AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.$ext"
-      #     done
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            dist/*.msi
 
       # - name: Create Draft Release
       #   uses: softprops/action-gh-release@v1
