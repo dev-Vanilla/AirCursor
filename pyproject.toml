@@ -2,6 +2,8 @@
 name = "AirCursor"
 version = "0.0.1-alpha"
 description = "Interact with your PC directly with your hands!"
+author = "Vanilla"
+url = "https://github.com/dev-Vanilla/AirCursor"
 
 [tool.cxfreeze]
 executables = [
@@ -21,6 +23,7 @@ install_icon = "resources/imgs/icon.ico"  # 安装图标
 
 # Linux RPM 特定配置
 [tool.cx_Freeze.bdist_rpm]
+url = "https://github.com/dev-Vanilla/AirCursor"
 requires = ["python3", "PySide6"]  # 依赖项
 icon = "resources/imgs/icon.svg"  # 图标文件
 
