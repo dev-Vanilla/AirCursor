@@ -112,6 +112,7 @@ jobs:
           name: Release ${{ env.VERSION }}
           body: |
             This is a release for version ${{ env.VERSION }}.
+          draft: true  # 将发布设置为草稿
           files: |
             artifacts/build-output-macos-x64/*.dmg
             artifacts/build-output-macos-arm64/*.dmg
