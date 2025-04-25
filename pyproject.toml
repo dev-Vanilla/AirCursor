@@ -2,8 +2,6 @@
 name = "AirCursor"
 version = "0.0.1-alpha"
 description = "Interact with your PC directly with your hands!"
-author = "Vanilla"
-url = "https://github.com/dev-Vanilla/AirCursor"
 
 [tool.cxfreeze]
 executables = [
