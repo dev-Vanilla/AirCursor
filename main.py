@@ -5,6 +5,7 @@ import queue
 from PySide6.QtCore import Qt, QSettings, QSize
 from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent
 from PySide6.QtSvg import QSvgRenderer
+from PySide6.QtSvgWidgets import QSvgWidget  # 正确导入 QSvgWidget
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QSystemTrayIcon, QMenu,
     QVBoxLayout, QHBoxLayout, QGridLayout, QStackedWidget,
@@ -74,7 +75,7 @@ class MainWindow(QMainWindow):
 
         # 侧边栏
         sidebar = QVBoxLayout()
-        buttons = ["首页", "LiveStream", "设置", "关于"]
+        buttons = [self.tr("Welcome"), self.tr("LiveStream"), self.tr("Settings"), self.tr("About")]
         self.buttons = []
         for text in buttons:
             button = QPushButton(text)
@@ -90,15 +91,15 @@ class MainWindow(QMainWindow):
 
         # 创建页面
         for page_name in buttons:
-            if page_name == "首页":
+            if page_name == self.tr("Welcome"):
                 page = self.create_main_page()
-            elif page_name == "LiveStream":
+            elif page_name == self.tr("LiveStream"):
                 # Live Stream Section
                 self.livestream = QLabel()
-                self.livestream.setText("实时预览将在此显示")  # Placeholder text
+                self.livestream.setText(self.tr("Livestream view will show here."))  # Placeholder text
                 self.livestream.setAlignment(Qt.AlignCenter)
                 page = self.livestream
-            elif page_name == "设置":
+            elif page_name == self.tr("Settings"):
                 # 配置页面
                 page = self.create_config_page()
             else:
@@ -133,9 +134,9 @@ class MainWindow(QMainWindow):
         tray_menu = QMenu()
 
         # Add actions to the tray menu
-        self.start_stop_action = QAction("启动服务", self)
-        show_action = QAction("显示窗口", self)
-        quit_action = QAction("退出", self)
+        self.start_stop_action = QAction(self.tr("Start Service"), self)
+        show_action = QAction(self.tr("Display Window"), self)
+        quit_action = QAction(self.tr("Exit"), self)
 
         # Connect actions to slots
         self.start_stop_action.triggered.connect(self.start_stop_recognition)
@@ -156,7 +157,7 @@ class MainWindow(QMainWindow):
         # Send a notification on startup
         self.tray_icon.showMessage(
             "AirCursor",
-            "应用已启动并最小化到托盘。",
+            "AirCursor has been minimized to tray.",
             QSystemTrayIcon.Information,
             3000  # 消息显示时间（毫秒）
         )
@@ -191,32 +192,36 @@ class MainWindow(QMainWindow):
 
             demo_layout = QGridLayout()
 
-
             move_img= QLabel("This is a demo picture.")
-            move_text=QLabel("<b>Move:</b> Move your index finger to control the cursor.")
+            move_img.setPixmap(QPixmap("resources/imgs/point_up.png"))
+            move_text=QLabel(self.tr("<b>Move:</b> Move your index finger to control the cursor."))
             demo_layout.addWidget(move_img, 0, 0)
             demo_layout.addWidget(move_text, 1, 0)
-            
+
             click_img= QLabel("This is a demo picture.")
-            click_text=QLabel("<b>Click:</b> Tap your index finger down to perform a click.")
+            click_img.setPixmap(QPixmap("resources/imgs/index_pointing_at_the_viewer.png"))
+            click_text=QLabel(self.tr("<b>Click:</b> Tap your index finger down to perform a click."))
             demo_layout.addWidget(click_img, 0, 1)
             demo_layout.addWidget(click_text, 1, 1)
 
             drag_img= QLabel("This is a demo picture.")
-            drag_text=QLabel("<b>Drag:</b> Pinch with your thumb and index finger to start dragging.")
+            drag_img.setPixmap(QPixmap("resources/imgs/pinching_hand.png"))
+            drag_text=QLabel(self.tr("<b>Drag:</b> Pinch with your thumb and index finger to start dragging."))
             demo_layout.addWidget(drag_img, 2, 0)
             demo_layout.addWidget(drag_text, 3, 0)
 
             scroll_img= QLabel("This is a demo picture.")
-            scroll_text=QLabel("<b>Scroll:</b> Use your index and middle fingers to scroll.")
+            scroll_img.setPixmap(QPixmap("resources/imgs/v.png"))
+            scroll_text=QLabel(self.tr("<b>Scroll:</b> Use your index and middle fingers to scroll."))
             demo_layout.addWidget(scroll_img, 2, 1)
             demo_layout.addWidget(scroll_text, 3, 1)
 
-            config_img= QLabel("This is a demo picture.")
-            config_text=QLabel("<b>Settings:</b> Go to the Settings page to customize sensitivity and other options.")
+            config_img= QLabel("<font size='64'>🎛️</font>")
+            config_img.setPixmap(QPixmap("resources/imgs/control_knobs.png"))
+            config_text=QLabel(self.tr("<b>Settings:</b> Go to the Settings page to customize sensitivity and other options."))
             demo_layout.addWidget(config_img, 4, 0)
             demo_layout.addWidget(config_text, 5, 0)
-            
+
 
             main_layout.addLayout(demo_layout)
 
@@ -235,10 +240,10 @@ class MainWindow(QMainWindow):
         # Screen Resolution Input
         screen_resolution_layout = QHBoxLayout()
         self.screen_width = QLineEdit(str(self.settings.value("screen_width")))
-        self.screen_width.setPlaceholderText("宽度 (px)")
+        self.screen_width.setPlaceholderText(self.tr("Width (px)"))
         self.screen_height = QLineEdit(str(self.settings.value("screen_height")))
-        self.screen_height.setPlaceholderText("高度 (px)")
-        screen_resolution_layout.addWidget(QLabel("Screen Resolution (px):"))
+        self.screen_height.setPlaceholderText(self.tr("Height (px)"))
+        screen_resolution_layout.addWidget(QLabel(self.tr("Screen Resolution (px):")))
         screen_resolution_layout.addWidget(self.screen_width)
         screen_resolution_layout.addWidget(QLabel("x"))
         screen_resolution_layout.addWidget(self.screen_height)
@@ -254,7 +259,7 @@ class MainWindow(QMainWindow):
         init_scale_index = self.scale_values.index(float(self.settings.value("scale")))  # 获取初始值对应的索引
         self.scale_slider.setValue(init_scale_index)  # 默认值
         self.scale_label = QLabel(f"{float(self.settings.value("scale")) * 100:.0f}%")
-        scale_layout.addWidget(QLabel("HiDPI Scaling:"))
+        scale_layout.addWidget(QLabel(self.tr("HiDPI Scaling:")))
         scale_layout.addWidget(self.scale_slider)
         scale_layout.addWidget(self.scale_label)
         self.scale_slider.valueChanged.connect(self.update_scale)
@@ -262,10 +267,10 @@ class MainWindow(QMainWindow):
         # Camera Resolution Input
         camera_resolution_layout = QHBoxLayout()
         self.camera_width = QLineEdit(str(self.settings.value("camera_width")))
-        self.camera_width.setPlaceholderText("宽度 (px)")
+        self.camera_width.setPlaceholderText(self.tr("Width (px)"))
         self.camera_height = QLineEdit(str(self.settings.value("camera_height")))
-        self.camera_height.setPlaceholderText("高度 (px)")
-        camera_resolution_layout.addWidget(QLabel("Camera Resolution (px):"))
+        self.camera_height.setPlaceholderText(self.tr("Height (px)"))
+        camera_resolution_layout.addWidget(QLabel(self.tr("Camera Resolution (px):")))
         camera_resolution_layout.addWidget(self.camera_width)
         camera_resolution_layout.addWidget(QLabel("x"))
         camera_resolution_layout.addWidget(self.camera_height)
@@ -280,7 +285,7 @@ class MainWindow(QMainWindow):
         init_fps_index = self.fps_values.index(str(self.settings.value("fps")))  # 获取初始值对应的索引
         self.fps_combo.setCurrentIndex(init_fps_index)  # 默认值
         self.fps_label = QLabel("FPS")
-        fps_layout.addWidget(QLabel("Camera Sampling FPS:"))
+        fps_layout.addWidget(QLabel(self.tr("Camera Sampling FPS:")))
         fps_layout.addWidget(self.fps_combo)
         fps_layout.addWidget(self.fps_label)
         self.fps_combo.currentTextChanged.connect(self.update_fps)
@@ -294,7 +299,7 @@ class MainWindow(QMainWindow):
         init_scroll_index = self.scroll_values.index(int(self.settings.value("scroll_speed")))  # 获取初始值对应的索引
         self.scroll_slider.setValue(init_scroll_index)  # 默认值
         self.scroll_label = QLabel(f"{int(self.settings.value("scroll_speed"))}")
-        scroll_layout.addWidget(QLabel("Scroll Speed:"))
+        scroll_layout.addWidget(QLabel(self.tr("Scroll Speed:")))
         scroll_layout.addWidget(self.scroll_slider)
         scroll_layout.addWidget(self.scroll_label)
         self.scroll_slider.valueChanged.connect(self.update_scroll)
@@ -308,8 +313,8 @@ class MainWindow(QMainWindow):
         self.click_thres_dial.setRange(1, 100)
         self.click_thres_dial.setSingleStep(1)
         self.click_thres_dial.setValue(int(self.settings.value("click_sensitivity")))
-        self.click_sensitivity_label = QLabel(f"当前灵敏度: {self.settings.value('click_sensitivity')}")
-        click_thres_layout.addWidget(QLabel("点击灵敏度"))
+        self.click_sensitivity_label = QLabel(self.tr("Current sensitivity: {}").format(self.settings.value('click_sensitivity')))
+        click_thres_layout.addWidget(QLabel(self.tr("Clicking Sensitivity")))
         click_thres_layout.addWidget(self.click_thres_dial)
         click_thres_layout.addWidget(self.click_sensitivity_label)
         self.click_thres_dial.valueChanged.connect(self.update_click_sensitivity)
@@ -320,8 +325,8 @@ class MainWindow(QMainWindow):
         self.move_thres_dial.setRange(0, 100)
         self.move_thres_dial.setSingleStep(1)
         self.move_thres_dial.setValue(int(self.settings.value("move_sensitivity")))
-        self.move_sensitivity_label = QLabel(f"当前灵敏度: {self.settings.value('move_sensitivity')}")
-        move_thres_layout.addWidget(QLabel("移动灵敏度"))
+        self.move_sensitivity_label = QLabel(self.tr("Current sensitivity: {}").format(self.settings.value('move_sensitivity')))
+        move_thres_layout.addWidget(QLabel(self.tr("Moving Sensitivity")))
         move_thres_layout.addWidget(self.move_thres_dial)
         move_thres_layout.addWidget(self.move_sensitivity_label)
         self.move_thres_dial.valueChanged.connect(self.update_move_sensitivity)
@@ -378,14 +383,14 @@ class MainWindow(QMainWindow):
             self.isRecognizing = False
             self.recognizer.Recognizing = False
             self.event_manager.pause_event.clear()  # 暂停线程
-            self.start_stop_action.setText("启动服务")
+            self.start_stop_action.setText(self.tr("Start Service"))
         else:
             self.isRecognizing = True
             self.recognizer.Recognizing = True
             self.event_manager.pause_event.set()  # 恢复线程
             threading.Thread(target=self.recognizer.recognition_thread, daemon=True).start()
             threading.Thread(target=self.mouse_control_thread, daemon=True).start()
-            self.start_stop_action.setText("暂停服务")
+            self.start_stop_action.setText(self.tr("Pause Service"))
 
 
     def initialize_settings(self):
@@ -460,13 +465,13 @@ class MainWindow(QMainWindow):
 
     def update_click_sensitivity(self, value):
         """Update the click sensitivity dial and save the value to QSettings."""
-        self.click_sensitivity_label.setText(f"当前灵敏度: {value}")
+        self.click_sensitivity_label.setText(self.tr("Current sensitivity: {}").format(value))
         self.settings.setValue("click_sensitivity", value)
         self.recognizer.update_parameters()
 
     def update_move_sensitivity(self, value):
         """Update the click sensitivity dial and save the value to QSettings."""
-        self.click_sensitivity_label.setText(f"当前灵敏度: {value}")
+        self.move_sensitivity_label.setText(self.tr("Current sensitivity: {}").format(value))
         self.settings.setValue("move_sensitivity", value)
         self.recognizer.update_parameters()
         self.controller.update_parameters()  # 更新 Controller 参数
@@ -517,16 +522,19 @@ class MainWindow(QMainWindow):
             pass  # 如果队列为空，跳过本次更新
 
 
+def main():
+    # You need one (and only one) QApplication instance per application.
+    app = QApplication(sys.argv)  # Pass in sys.argv to allow command line arguments for your app.
+    # If you know you won't use command line arguments QApplication([]) works too.
 
-# You need one (and only one) QApplication instance per application.
-app = QApplication(sys.argv)  # Pass in sys.argv to allow command line arguments for your app.
-# If you know you won't use command line arguments QApplication([]) works too.
+    # Create a Qt MainWindow, which will be our window.
+    window = MainWindow()
+    # window.show()  # IMPORTANT!!!!! Windows are hidden by default.
 
-# Create a Qt MainWindow, which will be our window.
-window = MainWindow()
-# window.show()  # IMPORTANT!!!!! Windows are hidden by default.
+    # Start the event loop.
+    app.exec()
 
-# Start the event loop.
-app.exec()
+    # Your application won't reach here until you exit and the event loop has stopped.
 
-# Your application won't reach here until you exit and the event loop has stopped.
+if __name__ == "__main__":
+    main()

@@ -7,9 +7,9 @@ AirCursor is a gesture-controlled mouse application built with PySide6 and Media
 - **Real-time Gesture Recognition**: Supports hand landmark detection.
 - **Mouse Operations**:
   - Move the cursor with your index finger, tap to click
-  - Pinch your thumb and index finger to trigger a click.
-  - Swipe gestures for scrolling.
-- **System Tray Support**: Minimize to the system tray.
+  - Pinch your thumb and index finger to drag.
+  - Swipe with your index and middle finger for scrolling.
+- **System Tray Support**: Minimize to the system tray. Runs as a background service.
 - **Customizable Sensitivity**: Adjust sensitivity for clicking, moving, and scrolling.
 - **Cross-platform Support**: Works on Windows, macOS, and Linux.
 
@@ -17,7 +17,7 @@ AirCursor is a gesture-controlled mouse application built with PySide6 and Media
 
 #### Dependencies
 Make sure you have installed the following dependencies:
-- Python 3.10+
+- Python 3.12+
 - OpenCV (`pip install opencv-python`)
 - MediaPipe (`pip install mediapipe`)
 - PySide6 (`pip install PySide6`)
@@ -34,10 +34,10 @@ python3 main.py
 ### Usage Instructions
 1. After launching the application, the camera will automatically start.
 2. Use gestures to control the mouse:
-   - **Move**: Point with your index finger.
-   - **Click**: Pinch your thumb and index finger.
-   - **Drag**: Keep pinching and move your hand.
-   - **Scroll**: Swipe your palm up or down.
+   - ☝️**Move**: Point with your index finger.
+   - 🫵**Click**: Pinch your thumb and index finger.
+   - 🤏**Drag**: Keep pinching and move your hand.
+   - ✌️**Scroll**: Swipe your palm up or down.
 3. You can pause or exit the service via the system tray icon.
 
 ### Screenshots
