@@ -13,7 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
         arch: [x64, arm64]
 
     steps:
@@ -25,10 +26,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      # - name: Install system dependencies (Ubuntu)
-      #   if: matrix.os == 'ubuntu-latest'
-      #   run: |
-      #     sudo apt update
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install cchache
 
       - name: Create and Activate Virtual Environment (Unix)
         if: matrix.os != 'windows-latest'
@@ -46,6 +48,47 @@ jobs:
             ${{ runner.os }}-venv-
 
 
+
+      - name: Install Visual Studio Build Tools
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          # 下载 Visual Studio Build Tools 安装程序
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile "vs_buildtools.exe"
+
+          # 安装 MSVC 和 Windows SDK 组件，支持 x64 和 arm64
+          Start-Process -FilePath ".\vs_buildtools.exe" -ArgumentList `
+            "--quiet", `
+            "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+            "--includeRecommended", `
+            "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM64" `
+            -Wait
+
+          # 删除安装程序以节省空间
+          Remove-Item -Path ".\vs_buildtools.exe"
+
+      - name: Configure MSVC Environment
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          :: 运行 vcvarsall.bat 以设置 MSVC 环境变量
+          CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
+
+          :: 验证 dumpbin 是否可用
+          dumpbin /?
+
+
+
+      - name: Debug Tools and Dependencies
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          echo "Checking dumpbin availability:"
+          dumpbin /?
+          echo "Listing files in the current directory:"
+          dir
+
+
       - name: Install Python dependencies in Virtual Environment (Unix)
         if: matrix.os != 'windows-latest'
         run: |
@@ -57,7 +100,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           source ./.venv/bin/activate
-          pyside6-deploy --name AirCursor
+          pyside6-deploy --name AirCursor --force --verbose
 
 
       - name: Create and Activate Virtual Environment (Windows)
@@ -80,7 +123,7 @@ jobs:
         shell: pwsh
         run: |
           .\.venv\Scripts\Activate
-          pyside6-deploy --name AirCursor
+          pyside6-deploy --name AirCursor --force --verbose
 
 
 
