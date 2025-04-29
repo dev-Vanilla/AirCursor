@@ -45,7 +45,6 @@ jobs:
           fi
           python -m pip install --upgrade pip
           pip --version  # 确认 pip 已升级
-        shell: bash
 
       - name: Install Python dependencies in Virtual Environment
         run: |
@@ -55,7 +54,6 @@ jobs:
             source .venv/bin/activate
           fi
           pip install -r requirements.txt
-        shell: bash
 
       - name: Cache Python dependencies
         uses: actions/cache@v3
@@ -74,7 +72,6 @@ jobs:
           fi
           pyside6-deploy --name AirCursor
           ls -R ./  # 调试信息
-        shell: bash
 
       - name: Upload Artifact (macOS)
         if: matrix.os == 'macos-latest'
