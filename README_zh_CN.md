@@ -19,12 +19,13 @@ style="margin: 0 10px;" >中文</span>
 
 <h1 align="center">AirCursor</h1>
 
-<p align="center"><strong>Turn any webpage into a desktop or mobile app in just 9 minutes. Simple and easy to use.</strong></p>
+<p align="center"><em>"我们要用世上最好的触控设备——我们与生俱来的手指"</em></p>  
+<p align="center"><strong>— 史蒂夫·乔布斯, 2007 iPhone 发布会</strong></p>
 
 
 ## 概述
 
-数十年来，鼠标、键盘和屏幕一直是人机交互的主要方式。尽管这些工具非常有效，但长时间使用容易容易让人感到疲惫。况且，随着技术的飞速发展，它们也略显局限。如果可以通过简单的空中手势控制电脑，那会怎样？受此愿景和最近的 AR 创新启发，我开发了 **AirCursor**，一款基于手势控制的鼠标应用程序。
+数十年来，鼠标、键盘和屏幕一直是人机交互的主要方式。尽管这些工具十分高效，但长期使用易致疲惫。随着技术的飞速发展，它们也略显局限。如果可以通过简单的空中手势控制电脑，那将怎样？受此愿景和最近 AR 领域的创新启发，我开发了 **AirCursor**，一款基于手势控制的鼠标应用。
 
 AirCursor 使用 **MediaPipe** 实现实时手部追踪，并通过 **PySide6** 提供用户界面，使我们能够通过手势直观地控制电脑。无需额外硬件，AirCursor 将简单的手部动作转化为精确的鼠标操作，例如移动光标、点击、拖拽和滚动——仅需动动手指即可完成。
 

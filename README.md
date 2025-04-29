@@ -19,7 +19,9 @@ style="margin: 0 10px;" >中文</a>
 <h1 align="center">AirCursor</h1>  
 
 
-<p align="center"><strong>Turn any webpage into a desktop or mobile app in just 9 minutes. Simple and easy to use.</strong></p>
+<p align="center"><em>"We're gonna use the best pointing device in the world.  
+We're gonna use a pointing device that we're all born with — our fingers."</em></p>  
+<p align="center"><strong>— Steve Jobs, Macworld 2007: The iPhone Introduction</strong></p>
 
 
 ## Overview
