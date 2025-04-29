@@ -6,7 +6,7 @@ on:
       - release  # 仅当推送代码到 release 分支时触发
 
 env:
-  VERSION: "0.0.1-alpha"
+  VERSION: "0.0.1-alpha"  # 全局变量：版本号
 
 jobs:
   build:
@@ -25,28 +25,56 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Cache Python dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Install system dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
+          sudo apt install -y alien fakeroot libwayland-egl1 rpm
 
-      - name: Install Python dependencies
+      - name: Create Virtual Environment
         run: |
+          python -m venv .venv
+          echo "Virtual environment created at ./.venv"
+
+      - name: Activate Virtual Environment and Upgrade Pip
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            .\.venv\Scripts\activate
+          else
+            source .venv/bin/activate
+          fi
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip --version  # 确认 pip 已升级
+        shell: bash
 
-      - name: Build Executive
+      - name: Install Python dependencies in Virtual Environment
         run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            .\.venv\Scripts\activate
+          else
+            source .venv/bin/activate
+          fi
+          pip install -r requirements.txt
+        shell: bash
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+
+      - name: Build Executive in Virtual Environment
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            .\.venv\Scripts\activate
+          else
+            source .venv/bin/activate
+          fi
           pyside6-deploy --name AirCursor
           ls -R ./  # 调试信息
+        shell: bash
 
       - name: Upload Artifact (macOS)
         if: matrix.os == 'macos-latest'
