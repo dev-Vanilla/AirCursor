@@ -11,7 +11,7 @@ style="margin: 0 10px;" >中文</span>
 <p align="center">
     <a href="https://github.com/dev-Vanilla/AirCursor/releases"><img src="https://img.shields.io/github/v/release/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Release"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/stargazers"><img src="https://img.shields.io/github/stars/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Stars"></a>
-    <a href="https://github.com/dev-Vanilla/AirCursor/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/dev-Vanilla/AirCursor/build.yml?style=flat-square&logo=github" alt="Build"></a>
+    <a href="https://github.com/dev-Vanilla/AirCursor/actions/workflows/build.yaml"><img src="https://img.shields.io/github/actions/workflow/status/dev-Vanilla/AirCursor/build.yaml?style=flat-square&logo=github" alt="Build"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="License"></a>
    </a>
 </p>
@@ -23,9 +23,9 @@ style="margin: 0 10px;" >中文</span>
 <p align="center"><strong>— 史蒂夫·乔布斯, 2007 iPhone 发布会</strong></p>
 
 
-## 概述
+## 概览
 
-数十年来，鼠标、键盘和屏幕一直是人机交互的主要方式。尽管这些工具十分高效，但长期使用易致疲惫。随着技术的飞速发展，它们也略显局限。如果可以通过简单的空中手势控制电脑，那将怎样？受此愿景和最近 AR 领域的创新启发，我开发了 **AirCursor**，一款基于手势控制的鼠标应用。
+数十年来，鼠标、键盘和屏幕一直是人机交互的主要方式。尽管这些工具十分高效，但长期使用易致疲劳。随着技术的飞速发展，这些彼时的革命性创新也稍显局限。如果可以通过简单的空中手势控制电脑，那将怎样？受此愿景和最近 AR 领域的创新启发，我开发了 **AirCursor**，一款基于手势控制的鼠标应用。
 
 AirCursor 使用 **MediaPipe** 实现实时手部追踪，并通过 **PySide6** 提供用户界面，使我们能够通过手势直观地控制电脑。无需额外硬件，AirCursor 将简单的手部动作转化为精确的鼠标操作，例如移动光标、点击、拖拽和滚动——仅需动动手指即可完成。
 
@@ -48,8 +48,9 @@ AirCursor 使用 **MediaPipe** 实现实时手部追踪，并通过 **PySide6** 
 
 ### 计划功能（待办清单）
 
-以下是我们在未来计划实现的功能：
+以下是未来计划实现的功能：
 
+- [ ] **更多手势**: 最小化, 最大化, 关闭窗口, 切换桌面 ...
 - [ ] **自定义手势**：允许用户定义自己的手势。
 - [ ] **Linux Wayland 支持**：扩展对 Linux Wayland 环境的兼容性。
 - [ ] **多语言界面**：增加对多种语言的支持。

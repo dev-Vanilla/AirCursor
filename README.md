@@ -11,22 +11,21 @@ style="margin: 0 10px;" >中文</a>
 <p align="center">
     <a href="https://github.com/dev-Vanilla/AirCursor/releases"><img src="https://img.shields.io/github/v/release/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Release"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/stargazers"><img src="https://img.shields.io/github/stars/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Stars"></a>
-    <a href="https://github.com/dev-Vanilla/AirCursor/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/dev-Vanilla/AirCursor/build.yml?style=flat-square&logo=github" alt="Build"></a>
+    <a href="https://github.com/dev-Vanilla/AirCursor/actions/workflows/build.yaml"><img src="https://img.shields.io/github/actions/workflow/status/dev-Vanilla/AirCursor/build.yaml?style=flat-square&logo=github" alt="Build"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="License"></a>
    </a>
 </p>
 
 <h1 align="center">AirCursor</h1>  
 
-
-<p align="center"><em>"We're gonna use the best pointing device in the world.  
+<p align="center"><em>"We'll use the best pointing device in the world.  
 We're gonna use a pointing device that we're all born with — our fingers."</em></p>  
 <p align="center"><strong>— Steve Jobs, Macworld 2007: The iPhone Introduction</strong></p>
 
 
 ## Overview
 
-For decades, the mouse, keyboard, and screen have dominated human-computer interaction. While these tools are effective, prolonged use can become tiresome, and they may feel limiting in an era of rapid technological advancement. What if you could control your computer with simple hand gestures in the air? Inspired by this vision—and recent AR innovations—I created **AirCursor**, a gesture-controlled mouse application.
+For decades, the mouse, keyboard, and screen have dominated human-computer interaction. While these tools are effective, prolonged use can be tiresome, and they may feel limiting in an era of rapid technological advancement. What if you could control your computer with simple hand gestures in the air? Inspired by this vision—and recent AR innovations—I created **AirCursor**, a gesture-controlled mouse application.
 
 AirCursor leverages **MediaPipe** for real-time hand tracking and **PySide6** for the user interface, enabling intuitive control of your computer through hand gestures. With no additional hardware required, AirCursor transforms simple movements into precise mouse inputs, such as moving the cursor, clicking, dragging, and scrolling—all with just your fingers.
 
@@ -51,6 +50,7 @@ This project is designed to be lightweight, cross-platform, and easy to use, mak
 
 Here’s what we’re working on next:
 
+- [ ] **More Gestures**: Minimize, Maximize, Close windows, Swiching desktops ...
 - [ ] **Customizable Gestures**: Allow users to define their own gestures.
 - [ ] **Linux Wayland Support**: Extend compatibility to Linux Wayland environments.
 - [ ] **Multi-Language UI**: Add support for multiple languages.
