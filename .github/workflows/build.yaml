@@ -25,26 +25,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install system dependencies (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt update
-          
-      - name: Create Virtual Environment
+      # - name: Install system dependencies (Ubuntu)
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: |
+      #     sudo apt update
+
+      - name: Create and Activate Virtual Environment (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
           python -m venv .venv
-          echo "Virtual environment created at ./.venv"
+          source ./.venv/bin/activate
 
-      - name: Activate Virtual Environment and Upgrade Pip
-        run: |
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            echo ".\.venv\Scripts\activate" >> $GITHUB_ENV
-          else
-            echo "source ./.venv/bin/activate" >> $GITHUB_ENV
-          fi
-          ${{ env.ACTIVATE_VENV }}
-          python -m pip install --upgrade pip
-          pip --version  # 确认 pip 已升级
 
       - name: Cache Python dependencies
         uses: actions/cache@v3
@@ -54,17 +45,44 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-venv-
 
-      - name: Install Python dependencies in Virtual Environment
+
+      - name: Install Python dependencies in Virtual Environment (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
-          ${{ env.ACTIVATE_VENV }}
+          source ./.venv/bin/activate
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build Executive in Virtual Environment
+      - name: Build Executive in Virtual Environment (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
-          ${{ env.ACTIVATE_VENV }}
+          source ./.venv/bin/activate
           pyside6-deploy --name AirCursor
-          ls -R ./  # 调试信息
-        shell: bash
+
+
+      - name: Create and Activate Virtual Environment (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\Activate
+
+      - name: Install Python dependencies in Virtual Environment (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          .\.venv\Scripts\Activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Executive in Virtual Environment (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          .\.venv\Scripts\Activate
+          pyside6-deploy --name AirCursor
+
+
 
       - name: Upload Artifact (macOS)
         if: matrix.os == 'macos-latest'
@@ -89,6 +107,8 @@ jobs:
           name: build-output-windows-${{ matrix.arch }}
           path: |
             ./*.exe
+
+
 
   release:
     needs: build
