@@ -13,8 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x64, arm64]
 
     steps:
@@ -26,30 +25,20 @@ jobs:
         with:
           python-version: "3.12"
 
+
       - name: Install system dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
           sudo apt install cchache
 
-      - name: Create and Activate Virtual Environment (Unix)
-        if: matrix.os != 'windows-latest'
+      - name: Install system dependencies (macOS)
+        if: matrix.os == 'macos-latest'
         run: |
-          python -m venv .venv
-          source ./.venv/bin/activate
+          brew install ccache
+          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
 
-
-      - name: Cache Python dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
-
-
-
-      - name: Install Visual Studio Build Tools
+      - name: Install Visual Studio Build Tools (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
@@ -67,26 +56,34 @@ jobs:
           # 删除安装程序以节省空间
           Remove-Item -Path ".\vs_buildtools.exe"
 
-      - name: Configure MSVC Environment
+      - name: Configure MSVC Environment (Windows)
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
           :: 运行 vcvarsall.bat 以设置 MSVC 环境变量
           CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
 
-          :: 验证 dumpbin 是否可用
-          dumpbin /?
 
+      - name: Create and Activate Virtual Environment (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          python -m venv .venv
+          source ./.venv/bin/activate
 
-
-      - name: Debug Tools and Dependencies
+      - name: Create and Activate Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          echo "Checking dumpbin availability:"
-          dumpbin /?
-          echo "Listing files in the current directory:"
-          dir
+          python -m venv .venv
+          .\.venv\Scripts\Activate
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
 
 
       - name: Install Python dependencies in Virtual Environment (Unix)
@@ -100,15 +97,8 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           source ./.venv/bin/activate
-          pyside6-deploy --name AirCursor --force --verbose
+          pyside6-deploy main.py --name AirCursor --force --verbose
 
-
-      - name: Create and Activate Virtual Environment (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          python -m venv .venv
-          .\.venv\Scripts\Activate
 
       - name: Install Python dependencies in Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
@@ -122,9 +112,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
+          CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
           .\.venv\Scripts\Activate
-          pyside6-deploy --name AirCursor --force --verbose
-
+          pyside6-deploy main.py --name AirCursor --force --verbose
 
 
       - name: Upload Artifact (macOS)
@@ -150,8 +140,6 @@ jobs:
           name: build-output-windows-${{ matrix.arch }}
           path: |
             ./*.exe
-
-
 
   release:
     needs: build
