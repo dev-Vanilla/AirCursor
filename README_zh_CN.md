@@ -1,9 +1,26 @@
+<h4 align="right"> 
+<a href="README.md">English</a> 
+<span href="README_zh_CN.md" 
+style="margin: 0 10px;" >中文</span> 
+</h4>
 
-![Aircursor Logo](./resources/imgs/icon.svg)
+<p align="center">
+    <img src="./resources/imgs/icon.svg" width=169/>
+</p>  
 
-# AirCursor
+<p align="center">
+    <a href="https://github.com/dev-Vanilla/AirCursor/releases"><img src="https://img.shields.io/github/v/release/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Release"></a>
+    <a href="https://github.com/dev-Vanilla/AirCursor/stargazers"><img src="https://img.shields.io/github/stars/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Stars"></a>
+    <a href="https://github.com/dev-Vanilla/AirCursor/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/dev-Vanilla/AirCursor/build.yml?style=flat-square&logo=github" alt="Build"></a>
+    <a href="https://github.com/dev-Vanilla/AirCursor/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="License"></a>
+   </a>
+</p>
 
-[English](README.md) | [中文](README_zh_CN.md)
+
+<h1 align="center">AirCursor</h1>
+
+<p align="center"><strong>Turn any webpage into a desktop or mobile app in just 9 minutes. Simple and easy to use.</strong></p>
+
 
 ## 概述
 

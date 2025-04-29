@@ -30,7 +30,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install cchache
+          sudo apt install ccache
 
       - name: Install system dependencies (macOS)
         if: matrix.os == 'macos-latest'
