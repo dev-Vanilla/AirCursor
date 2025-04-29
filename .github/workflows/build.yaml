@@ -5,12 +5,15 @@ on:
     branches:
       - release  # 仅当推送代码到 release 分支时触发
 
+env:
+  VERSION: "0.0.1-alpha"
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x64, arm64]
 
     steps:
@@ -20,42 +23,63 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-          # architecture: ${{ matrix.arch }}
+          python-version: "3.12"
 
-      - name: Install system dependencies (Linux)
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install system dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y alien fakeroot rpm
+          sudo apt update
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install cx_Freeze
           pip install -r requirements.txt
 
-      - name: Get version from pyproject.toml
-        id: get_version
+      - name: Build Executive
         run: |
-          pip install toml
-          echo "VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')" >> $GITHUB_ENV
+          pyside6-deploy --name AirCursor
+          ls -R ./  # 调试信息
 
-      - name: Build Application
-        run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            cxfreeze bdist_deb
-            cxfreeze bdist_rpm
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            cxfreeze bdist_msi
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            cxfreeze bdist_dmg
-          fi
+      - name: Upload Artifact (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-macos-${{ matrix.arch }}
+          path: |
+            ./*.app
 
-          for file in dist/*; do
-            ext="${file##*.}"  # Extract the file extension
-            mv "$file" "dist/AirCursor-${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.$ext"
-          done
+      - name: Upload Artifact (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-linux-${{ matrix.arch }}
+          path: |
+            ./*.bin
+
+      - name: Upload Artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-windows-${{ matrix.arch }}
+          path: |
+            ./*.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
@@ -64,7 +88,12 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           body: |
-            This is a draft release for version ${{ env.VERSION }}.
+            This is a release for version ${{ env.VERSION }}.
           draft: true  # 将发布设置为草稿
           files: |
-            dist/*${{ matrix.os }}-${{ matrix.arch }}_${{ env.VERSION }}.*
+            artifacts/build-output-macos-x64/*.app
+            artifacts/build-output-macos-arm64/*.app
+            artifacts/build-output-linux-x64/*.bin
+            artifacts/build-output-linux-arm64/*.bin
+            artifacts/build-output-windows-x64/*.exe
+            artifacts/build-output-windows-arm64/*.exe
