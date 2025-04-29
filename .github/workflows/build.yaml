@@ -5,12 +5,15 @@ on:
     branches:
       - release  # 仅当推送代码到 release 分支时触发
 
+env:
+  VERSION: "0.0.1-alpha"
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, fedora-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x64, arm64]
 
     steps:
@@ -22,46 +25,28 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install system dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install -y alien fakeroot libwayland-egl1 rpm
-
-      - name: Install system dependencies (Fedora)
-        if: matrix.os == 'fedora-latest'
-        run: |
-          sudo dnf install -y rpm
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install cx_Freeze
           pip install -r requirements.txt
 
-      - name: Get version from pyproject.toml
-        id: get_version
+      - name: Build Executive
         run: |
-          pip install toml
-          echo "VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')" >> $GITHUB_ENV
-
-      - name: Build Application (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          cxfreeze bdist_msi
-
-      - name: Build Application (macOS/Linux)
-        if: matrix.os != 'windows-latest'
-        shell: bash
-        run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            cxfreeze bdist_deb
-          elif [ "${{ matrix.os }}" == "fedora-latest" ]; then
-            cxfreeze bdist_rpm
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            cxfreeze bdist_dmg
-          fi
+          pyside6-deploy --name AirCursor
+          ls -R ./  # 调试信息
 
       - name: Upload Artifact (macOS)
         if: matrix.os == 'macos-latest'
@@ -69,23 +54,15 @@ jobs:
         with:
           name: build-output-macos-${{ matrix.arch }}
           path: |
-            build/*.dmg
+            ./*.app
 
-      - name: Upload Artifact (Ubuntu)
+      - name: Upload Artifact (Linux)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: build-output-ubuntu-${{ matrix.arch }}
+          name: build-output-linux-${{ matrix.arch }}
           path: |
-            dist/*.deb
-
-      - name: Upload Artifact (Fedora)
-        if: matrix.os == 'fedora-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output-fedora-${{ matrix.arch }}
-          path: |
-            dist/*.rpm
+            ./*.bin
 
       - name: Upload Artifact (Windows)
         if: matrix.os == 'windows-latest'
@@ -93,7 +70,7 @@ jobs:
         with:
           name: build-output-windows-${{ matrix.arch }}
           path: |
-            dist/*.msi
+            ./*.exe
 
   release:
     needs: build
@@ -114,11 +91,9 @@ jobs:
             This is a release for version ${{ env.VERSION }}.
           draft: true  # 将发布设置为草稿
           files: |
-            artifacts/build-output-macos-x64/*.dmg
-            artifacts/build-output-macos-arm64/*.dmg
-            artifacts/build-output-ubuntu-x64/*.deb
-            artifacts/build-output-ubuntu-arm64/*.deb
-            artifacts/build-output-fedora-x64/*.rpm
-            artifacts/build-output-fedora-arm64/*.rpm
-            artifacts/build-output-windows-x64/*.msi
-            artifacts/build-output-windows-arm64/*.msi
+            artifacts/build-output-macos-x64/*.app
+            artifacts/build-output-macos-arm64/*.app
+            artifacts/build-output-linux-x64/*.bin
+            artifacts/build-output-linux-arm64/*.bin
+            artifacts/build-output-windows-x64/*.exe
+            artifacts/build-output-windows-arm64/*.exe

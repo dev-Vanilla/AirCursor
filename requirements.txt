@@ -1,5 +1,5 @@
 mediapipe
 opencv-python
-PyAutoGUI
 pynput
 PySide6
+tomlkit

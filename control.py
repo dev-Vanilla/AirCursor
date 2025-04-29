@@ -1,4 +1,4 @@
-import pyautogui
+# import pyautogui
 from pynput.mouse import Controller as MouseController, Button
 
 class Controller:
@@ -61,8 +61,8 @@ class Controller:
         #     self.mouse.release(Button.left)
         #     self.is_pressing = False
 
-        # self.mouse.scroll(0, scroll_step)
-        pyautogui.scroll(int(self.scroll_step * self.scroll_speed))
+        self.mouse.scroll(0, int(self.scroll_step * self.scroll_speed))
+        # pyautogui.scroll(int(self.scroll_step * self.scroll_speed))
 
     def handle_drag(self):
         if not self.is_pressing:
