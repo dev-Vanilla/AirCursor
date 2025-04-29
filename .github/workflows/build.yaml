@@ -112,7 +112,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
+          & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
           .\.venv\Scripts\Activate
           pyside6-deploy main.py --name AirCursor --force --verbose
 
