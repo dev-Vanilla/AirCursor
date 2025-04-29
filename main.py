@@ -2,7 +2,7 @@ import os
 import sys  # Only needed for access to command line arguments
 import threading
 import queue
-from PySide6.QtCore import Qt, QSettings, QSize
+from PySide6.QtCore import Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo
 from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtSvgWidgets import QSvgWidget  # 正确导入 QSvgWidget
@@ -13,7 +13,8 @@ from PySide6.QtWidgets import (
 )
 from control import Controller
 from recognize  import Recognizer
-from utils import icon_path, logo_path, model_path
+from resources import rc_resources
+from translations import rc_translations
 
 ORGANIZATION_NAME = "aircursor"
 APPLICATION_NAME = "AirCursor"
@@ -43,7 +44,7 @@ class MainWindow(QMainWindow):
         # When you subclass a Qt class you must always call the super __init__ function to allow Qt to set up the object.
         super().__init__()
         self.setWindowTitle("AirCursor")
-        self.setWindowIcon(QIcon(icon_path))  # 设置窗口图标
+        self.setWindowIcon(QIcon(":/resources/imgs/icon.svg"))  # 设置窗口图标
         self.settings = QSettings(ORGANIZATION_NAME, APPLICATION_NAME)  # 初始化 QSettings
         self.initialize_settings()  # 加载配置（如果不存在则使用默认值）
 
@@ -59,19 +60,16 @@ class MainWindow(QMainWindow):
         # 初始化 Controller
         self.controller = Controller(self.settings)
         self.recognizer = Recognizer(
-            model_path = model_path,
+            model_path = ":/resources/model/hand_landmarker.task",
             settings = self.settings,
             event_manager = self.event_manager
         )
 
-
         # self.recognizer.hand_data_signal.connect(self.mouse_control_thread)
         self.recognizer.frame_signal.connect(self.update_livestream_thread)
 
-
         # Main Layout
         main_layout = QHBoxLayout()
-
 
         # 侧边栏
         sidebar = QVBoxLayout()
@@ -172,7 +170,7 @@ class MainWindow(QMainWindow):
             icon_color = QColor(Qt.white)  # 白色图标
 
         # 加载 SVG 图标并动态着色
-        renderer = QSvgRenderer(logo_path)  # 替换为你的 SVG 文件路径
+        renderer = QSvgRenderer(":/resources/imgs/logo.svg")  # 替换为你的 SVG 文件路径
         pixmap = QPixmap(QSize(256, 256))  # 高分辨率图标
         pixmap.fill(Qt.transparent)
 
@@ -193,31 +191,31 @@ class MainWindow(QMainWindow):
             demo_layout = QGridLayout()
 
             move_img= QLabel("This is a demo picture.")
-            move_img.setPixmap(QPixmap("resources/imgs/point_up.png"))
+            move_img.setPixmap(QPixmap(":/resources/imgs/point_up.png"))
             move_text=QLabel(self.tr("<b>Move:</b> Move your index finger to control the cursor."))
             demo_layout.addWidget(move_img, 0, 0)
             demo_layout.addWidget(move_text, 1, 0)
 
             click_img= QLabel("This is a demo picture.")
-            click_img.setPixmap(QPixmap("resources/imgs/index_pointing_at_the_viewer.png"))
+            click_img.setPixmap(QPixmap(":/resources/imgs/index_pointing_at_the_viewer.png"))
             click_text=QLabel(self.tr("<b>Click:</b> Tap your index finger down to perform a click."))
             demo_layout.addWidget(click_img, 0, 1)
             demo_layout.addWidget(click_text, 1, 1)
 
             drag_img= QLabel("This is a demo picture.")
-            drag_img.setPixmap(QPixmap("resources/imgs/pinching_hand.png"))
+            drag_img.setPixmap(QPixmap(":/resources/imgs/pinching_hand.png"))
             drag_text=QLabel(self.tr("<b>Drag:</b> Pinch with your thumb and index finger to start dragging."))
             demo_layout.addWidget(drag_img, 2, 0)
             demo_layout.addWidget(drag_text, 3, 0)
 
             scroll_img= QLabel("This is a demo picture.")
-            scroll_img.setPixmap(QPixmap("resources/imgs/v.png"))
+            scroll_img.setPixmap(QPixmap(":/resources/imgs/v.png"))
             scroll_text=QLabel(self.tr("<b>Scroll:</b> Use your index and middle fingers to scroll."))
             demo_layout.addWidget(scroll_img, 2, 1)
             demo_layout.addWidget(scroll_text, 3, 1)
 
             config_img= QLabel("<font size='64'>🎛️</font>")
-            config_img.setPixmap(QPixmap("resources/imgs/control_knobs.png"))
+            config_img.setPixmap(QPixmap(":/resources/imgs/control_knobs.png"))
             config_text=QLabel(self.tr("<b>Settings:</b> Go to the Settings page to customize sensitivity and other options."))
             demo_layout.addWidget(config_img, 4, 0)
             demo_layout.addWidget(config_text, 5, 0)
@@ -526,6 +524,16 @@ def main():
     # You need one (and only one) QApplication instance per application.
     app = QApplication(sys.argv)  # Pass in sys.argv to allow command line arguments for your app.
     # If you know you won't use command line arguments QApplication([]) works too.
+
+
+    translator = QTranslator(app)
+    if translator.load(QLocale.system(), 'qtbase', '_', QLibraryInfo.path(QLibraryInfo.TranslationsPath)):
+        app.installTranslator(translator)
+    translator = QTranslator(app)
+    if translator.load(QLocale.system(), 'main', '_', ':/translations'):
+        app.installTranslator(translator)
+
+
 
     # Create a Qt MainWindow, which will be our window.
     window = MainWindow()

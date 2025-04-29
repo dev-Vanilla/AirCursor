@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="resources">
+    <file>imgs/icon.icns</file>
+    <file>imgs/icon.ico</file>
+    <file>imgs/icon.svg</file>
+    <file>imgs/logo.svg</file>
+    <file>imgs/control_knobs.png</file>
+    <file>imgs/index_pointing_at_the_viewer.png</file>
+    <file>imgs/pinching_hand.png</file>
+    <file>imgs/point_up.png</file>
+    <file>imgs/v.png</file>
+    <file>model/hand_landmarker.task</file>
+</qresource>
+</RCC>

@@ -2,3 +2,4 @@ mediapipe
 opencv-python
 pynput
 PySide6
+tomlkit
