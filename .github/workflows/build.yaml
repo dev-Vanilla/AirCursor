@@ -29,8 +29,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install -y alien fakeroot libwayland-egl1 rpm
-
+          
       - name: Create Virtual Environment
         run: |
           python -m venv .venv
@@ -39,21 +38,13 @@ jobs:
       - name: Activate Virtual Environment and Upgrade Pip
         run: |
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            .\.venv\Scripts\activate
+            echo ".\.venv\Scripts\activate" >> $GITHUB_ENV
           else
-            source .venv/bin/activate
+            echo "source ./.venv/bin/activate" >> $GITHUB_ENV
           fi
+          ${{ env.ACTIVATE_VENV }}
           python -m pip install --upgrade pip
           pip --version  # 确认 pip 已升级
-
-      - name: Install Python dependencies in Virtual Environment
-        run: |
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            .\.venv\Scripts\activate
-          else
-            source .venv/bin/activate
-          fi
-          pip install -r requirements.txt
 
       - name: Cache Python dependencies
         uses: actions/cache@v3
@@ -63,15 +54,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-venv-
 
+      - name: Install Python dependencies in Virtual Environment
+        run: |
+          ${{ env.ACTIVATE_VENV }}
+          pip install -r requirements.txt
+
       - name: Build Executive in Virtual Environment
         run: |
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            .\.venv\Scripts\activate
-          else
-            source .venv/bin/activate
-          fi
+          ${{ env.ACTIVATE_VENV }}
           pyside6-deploy --name AirCursor
           ls -R ./  # 调试信息
+        shell: bash
 
       - name: Upload Artifact (macOS)
         if: matrix.os == 'macos-latest'
