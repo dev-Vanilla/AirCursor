@@ -16,16 +16,20 @@ style="margin: 0 10px;" >中文</a>
    </a>
 </p>
 
-<h1 align="center">AirCursor</h1>  
+
+<h1 align="center">AirCursor</h1>
+<p align="center">
+    <strong>Control your PC easily with simple hand movements in the air.</strong>
+</p>
 
 <p align="center"><em>"We'll use the best pointing device in the world.  
 We're gonna use a pointing device that we're all born with — our fingers."</em></p>  
-<p align="center"><strong>— Steve Jobs, Macworld 2007: The iPhone Introduction</strong></p>
+<p align="center">— Steve Jobs, Macworld 2007: The iPhone Introduction</p>
 
 
 ## Overview
 
-For decades, the mouse, keyboard, and screen have dominated human-computer interaction. While these tools are effective, prolonged use can be tiresome, and they may feel limiting in an era of rapid technological advancement. What if you could control your computer with simple hand gestures in the air? Inspired by this vision—and recent AR innovations—I created **AirCursor**, a gesture-controlled mouse application.
+For decades, the mouse, touchpad, keyboard, and screen have dominated human-computer interaction. While these tools are effective, prolonged use can be tiresome, and they may feel limiting in an era of rapid technological advancement. What if you could control your computer with simple hand gestures in the air? Inspired by this vision—and recent AR innovations—I created **AirCursor**, a gesture-controlled mouse application.
 
 AirCursor leverages **MediaPipe** for real-time hand tracking and **PySide6** for the user interface, enabling intuitive control of your computer through hand gestures. With no additional hardware required, AirCursor transforms simple movements into precise mouse inputs, such as moving the cursor, clicking, dragging, and scrolling—all with just your fingers.
 
@@ -46,7 +50,7 @@ This project is designed to be lightweight, cross-platform, and easy to use, mak
 - **System Tray Support**: Minimize to the system tray and run as a background service.
 - **Customizable Sensitivity**: Adjust sensitivity for clicking, moving, and scrolling.
 
-### Planned Features (To-Do List)
+### Planned
 
 Here’s what we’re working on next:
 

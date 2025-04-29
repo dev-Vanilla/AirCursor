@@ -18,6 +18,9 @@ style="margin: 0 10px;" >中文</span>
 
 
 <h1 align="center">AirCursor</h1>
+<p align="center">
+    <strong>用手势与电脑轻松交互</strong>
+</p>
 
 <p align="center"><em>"我们要用世上最好的触控设备——我们与生俱来的手指"</em></p>  
 <p align="center"><strong>— 史蒂夫·乔布斯, 2007 iPhone 发布会</strong></p>
@@ -46,9 +49,8 @@ AirCursor 使用 **MediaPipe** 实现实时手部追踪，并通过 **PySide6** 
 - **系统托盘支持**：可最小化到系统托盘并作为后台服务运行。
 - **灵敏度调节**：可调整点击、移动和滚动的灵敏度。
 
-### 计划功能（待办清单）
+### 功能待办
 
-以下是未来计划实现的功能：
 
 - [ ] **更多手势**: 最小化, 最大化, 关闭窗口, 切换桌面 ...
 - [ ] **自定义手势**：允许用户定义自己的手势。
@@ -64,14 +66,14 @@ AirCursor 使用 **MediaPipe** 实现实时手部追踪，并通过 **PySide6** 
 |--------------|---------------|-------------|
 | **Windows**  | 所有版本      | ✅ 已支持   |
 | **macOS**    | macOS 10.15+  | ✅ 已支持   |
-| **Linux**    | Wayland       | 🚧 计划中   |
+| **Linux**    | Wayland       | 🚧 规划中   |
 |              | Xorg          | ✅ 已支持   |
 
 ---
 
 ## 快速开始
 
-### 试用 AirCursor
+### 尝试 AirCursor
 1. 前往 [GitHub Releases 页面](https://github.com/dev-Vanilla/AirCursor/releases)，下载适用于你平台的可执行文件：
    - `.exe` 适用于 Windows
    - `.app` 适用于 macOS
