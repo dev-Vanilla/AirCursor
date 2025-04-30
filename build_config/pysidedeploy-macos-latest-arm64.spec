@@ -1,7 +1,7 @@
 [app]
 
 # title of your application
-title = AirCursor
+title = AirCursor-arm64
 
 # project root directory. default = The parent directory of input_file
 project_dir = .

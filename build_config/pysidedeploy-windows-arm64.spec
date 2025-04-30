@@ -1,13 +1,13 @@
 [app]
 
 # title of your application
-title = AirCursor
+title = AirCursor-arm64
 
 # project root directory. default = The parent directory of input_file
-project_dir = D:\a\AirCursor\AirCursor
+project_dir = .
 
 # source file entry point path. default = main.py
-input_file = D:\a\AirCursor\AirCursor\main.py
+input_file = ./main.py
 
 # directory where the executable output is generated
 exec_directory = .
@@ -16,12 +16,12 @@ exec_directory = .
 project_file = 
 
 # application icon
-icon = D:\a\AirCursor\AirCursor\resources/imgs/icon.ico
+icon = ./resources/imgs/icon.ico
 
 [python]
 
 # python path
-python_path = D:\a\AirCursor\AirCursor\.venv\Scripts\python.exe
+python_path = ./.venv\Scripts\python.exe
 
 # python packages to install
 packages = Nuitka==2.6.8
