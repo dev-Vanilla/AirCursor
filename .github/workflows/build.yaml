@@ -39,7 +39,7 @@ jobs:
       - name: Install system dependencies (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          brew install ccache
+          brew install ccache create-dmg
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
 
       - name: Cache Visual Studio Build Tools Installer (Windows)
