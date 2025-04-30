@@ -7,7 +7,7 @@ title = AirCursor
 project_dir = .
 
 # source file entry point path. default = main.py
-input_file = main.py
+input_file = ./main.py
 
 # directory where the executable output is generated
 exec_directory = .

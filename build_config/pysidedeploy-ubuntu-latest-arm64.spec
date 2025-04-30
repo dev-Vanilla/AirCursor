@@ -4,10 +4,10 @@
 title = AirCursor
 
 # project root directory. default = The parent directory of input_file
-project_dir = /home/runner/work/AirCursor/AirCursor
+project_dir = .
 
 # source file entry point path. default = main.py
-input_file = /home/runner/work/AirCursor/AirCursor/main.py
+input_file = ./main.py
 
 # directory where the executable output is generated
 exec_directory = .
@@ -16,12 +16,12 @@ exec_directory = .
 project_file = 
 
 # application icon
-icon = /home/runner/work/AirCursor/AirCursor/resources/imgs/icon.svg
+icon = ./resources/imgs/icon.svg
 
 [python]
 
 # python path
-python_path = /home/runner/work/AirCursor/AirCursor/.venv/bin/python
+python_path = ./.venv/bin/python
 
 # python packages to install
 packages = Nuitka==2.6.8
