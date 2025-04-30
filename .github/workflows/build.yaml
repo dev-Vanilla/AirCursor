@@ -15,7 +15,7 @@ jobs:
       matrix:
         # os: [ubuntu-latest, macos-latest, windows-latest]
         # arch: [x64, arm64]
-        os: [ubuntu-latest, macos-latest]
+        os: [macos-latest]
         arch: [x64, arm64]
 
     steps:
@@ -132,7 +132,11 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           source ./.venv/bin/activate
-          pyside6-deploy main.py -c build_config/pysidedeploy-${{ matrix.arch }}-${{ matrix.arch }}.spec --force --verbose
+          pyside6-deploy \
+            -c build_config/pysidedeploy-${{ matrix.arch }}-${{ matrix.arch }}.spec \
+            --force \
+            --verbose \
+            main.py
 
       - name: Build Executive in Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
@@ -140,7 +144,11 @@ jobs:
         run: |
           CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }} && ^
           .\.venv\Scripts\Activate && ^
-          pyside6-deploy main.py -c build_config/pysidedeploy-windows-${{ matrix.arch }}.spec --force --verbose
+          pyside6-deploy \
+            -c build_config/pysidedeploy-windows-${{ matrix.arch }}.spec \
+            --force \
+            --verbose \
+            main.py
 
       
 
