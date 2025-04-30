@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AirCursor
+Comment=Control your PC simply with your hands.
+Exec=/usr/bin/AirCursor.bin
+Icon=aircursor
+Terminal=false
+Type=Application
+Categories=Utility;Application;QT;
+StartupNotify=true

@@ -19,7 +19,7 @@ style="margin: 0 10px;" >中文</span>
 
 <h1 align="center">AirCursor</h1>
 <p align="center">
-    <strong>用手势与电脑轻松交互</strong>
+    <strong>用双手与电脑轻松交互</strong>
 </p>
 
 <p align="center"><em>"我们要用世上最好的触控设备——我们与生俱来的手指"</em></p>  

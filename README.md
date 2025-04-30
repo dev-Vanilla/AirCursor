@@ -19,7 +19,7 @@ style="margin: 0 10px;" >中文</a>
 
 <h1 align="center">AirCursor</h1>
 <p align="center">
-    <strong>Control your PC easily with simple hand movements in the air.</strong>
+    <strong>Control your PC directly with your hands.</strong>
 </p>
 
 <p align="center"><em>"We'll use the best pointing device in the world.  

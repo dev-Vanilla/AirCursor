@@ -15,7 +15,7 @@ jobs:
       matrix:
         # os: [ubuntu-latest, macos-latest, windows-latest]
         # arch: [x64, arm64]
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest]
         arch: [x64, arm64]
 
     steps:
@@ -33,7 +33,8 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install ccache
+          sudo apt install -y build-essential ccache ruby ruby-dev
+          sudo gem install fpm
 
       - name: Install system dependencies (macOS)
         if: matrix.os == 'macos-latest'
@@ -141,6 +142,63 @@ jobs:
           .\.venv\Scripts\Activate && ^
           pyside6-deploy main.py -c build_config/pysidedeploy-windows-${{ matrix.arch }}.spec --force --verbose
 
+      
+
+      - name: Create DMG file (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          create-dmg \
+            --volname "AirCursor" \
+            --volicon "./resources/icon.icns" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "AirCursor.app" 200 190 \
+            --hide-extension "AirCursor.app" \
+            --app-drop-link 600 185 \
+            "AirCursor-macos-${{ matrix.arch }}.dmg" \
+            "AirCursor.app"
+
+      - name: Create DEB file (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          fpm -s dir -t deb \
+              -n aircursor \
+              -v ${{ env.VERSION }} \
+              --url "https://github.com/dev-Vanilla/AirCursor" \
+              --description "Control your PC directly with your hands." \
+              --maintainer "vanillayhd@outlook.com" \
+              --license "AGPL" \
+              ./AirCursor.bin=/usr/bin/AirCursor.bin \
+              .build_tmp/16.png=/usr/share/icons/hicolor/16x16/apps/aircursor.png \
+              .build_tmp/32.png=/usr/share/icons/hicolor/32x32/apps/aircursor.png \
+              .build_tmp/64.png=/usr/share/icons/hicolor/64x64/apps/aircursor.png \
+              .build_tmp/128.png=/usr/share/icons/hicolor/128x128/apps/aircursor.png \
+              .build_tmp/256.png=/usr/share/icons/hicolor/256x256/apps/aircursor.png \
+              .build_tmp/512.png=/usr/share/icons/hicolor/512x512/apps/aircursor.png \
+              .build_tmp/1024.png=/usr/share/icons/hicolor/1024x1024/apps/aircursor.png \
+              .build_tmp/AirCursor.desktop=/usr/share/applications/AirCursor.desktop
+
+      - name: Create RPM file (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          fpm -s dir -t rpm \
+              -n aircursor \
+              -v ${{ env.VERSION }} \
+              --url "https://github.com/dev-Vanilla/AirCursor" \
+              --description "Control your PC directly with your hands." \
+              --maintainer "vanillayhd@outlook.com" \
+              --license "AGPL" \
+              ./AirCursor.bin=/usr/bin/AirCursor.bin \
+              .build_tmp/16.png=/usr/share/icons/hicolor/16x16/apps/aircursor.png \
+              .build_tmp/32.png=/usr/share/icons/hicolor/32x32/apps/aircursor.png \
+              .build_tmp/64.png=/usr/share/icons/hicolor/64x64/apps/aircursor.png \
+              .build_tmp/128.png=/usr/share/icons/hicolor/128x128/apps/aircursor.png \
+              .build_tmp/256.png=/usr/share/icons/hicolor/256x256/apps/aircursor.png \
+              .build_tmp/512.png=/usr/share/icons/hicolor/512x512/apps/aircursor.png \
+              .build_tmp/1024.png=/usr/share/icons/hicolor/1024x1024/apps/aircursor.png \
+              .build_tmp/AirCursor.desktop=/usr/share/applications/AirCursor.desktop
+
 
 
       - name: Upload Artifact (macOS)
@@ -150,6 +208,7 @@ jobs:
           name: build-output-macos-${{ matrix.arch }}
           path: |
             ./*.app
+            ./*.dmg
 
       - name: Upload Artifact (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -158,6 +217,8 @@ jobs:
           name: build-output-linux-${{ matrix.arch }}
           path: |
             ./*.bin
+            ./*.deb
+            ./*.rpm
 
       - name: Upload Artifact (Windows)
         if: matrix.os == 'windows-latest'
@@ -189,7 +250,13 @@ jobs:
           files: |
             artifacts/build-output-macos-x64/*.app
             artifacts/build-output-macos-arm64/*.app
+            artifacts/build-output-macos-x64/*.dmg
+            artifacts/build-output-macos-arm64/*.dmg
             artifacts/build-output-linux-x64/*.bin
             artifacts/build-output-linux-arm64/*.bin
-            artifacts/build-output-windows-x64/*.exe
-            artifacts/build-output-windows-arm64/*.exe
+            artifacts/build-output-linux-x64/*.deb
+            artifacts/build-output-linux-arm64/*.deb
+            artifacts/build-output-linux-x64/*.rpm
+            artifacts/build-output-linux-arm64/*.rpm
+            # artifacts/build-output-windows-x64/*.exe
+            # artifacts/build-output-windows-arm64/*.exe
