@@ -149,7 +149,7 @@ jobs:
         run: |
           create-dmg \
             --volname "AirCursor" \
-            --volicon "./resources/icon.icns" \
+            --volicon "./resources/imgs/icon.icns" \
             --window-pos 200 120 \
             --window-size 800 400 \
             --icon-size 100 \
