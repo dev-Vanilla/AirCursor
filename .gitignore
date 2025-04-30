@@ -17,7 +17,7 @@ env/
 # 忽略打包工具生成的文件
 build/
 dist/
-*.spec
+# *.spec
 *.egg-info/
 
 # 忽略日志和缓存文件
@@ -43,7 +43,5 @@ htmlcov/
 # 忽略 Jupyter Notebook 检查点
 .ipynb_checkpoints/
 
-# 忽略 cx_Freeze 打包生成的中间文件
-_cxFreeze/
 
 .ropeproject

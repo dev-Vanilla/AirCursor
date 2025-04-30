@@ -13,7 +13,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        # arch: [x64, arm64]
+        os: [windows-latest]
         arch: [x64, arm64]
 
     steps:
@@ -24,6 +26,65 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
+
+
+
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install ccache
+
+      - name: Install system dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install ccache
+          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+
+      - name: Cache Visual Studio Build Tools Installer (Windows)
+        if: matrix.os == 'windows-latest'
+        id: cache-vs-installer
+        uses: actions/cache@v3
+        with:
+          path: vs_buildtools.exe
+          key: ${{ runner.os }}-vsinstaller-2022
+
+      - name: Download Visual Studio Build Tools
+        if: matrix.os == 'windows-latest' && steps.cache-vs-installer.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          Write-Host "🌐 Downloading Visual Studio Build Tools..."
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile "vs_buildtools.exe"
+
+      - name: Install Visual Studio Build Tools (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Host "🛠️ Installing Visual Studio Build Tools..."
+          Start-Process -FilePath ".\vs_buildtools.exe" -ArgumentList `
+            "--quiet", `
+            "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+            "--includeRecommended", `
+            "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM64" `
+            -Wait
+
+          Remove-Item -Path ".\vs_buildtools.exe"
+
+      - name: Configure MSVC Environment (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          :: 运行 vcvarsall.bat 以设置 MSVC 环境变量
+          CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
+
+      # - name: Download Dependency Walker
+      #   if: matrix.os == 'windows-latest'
+      #   shell: cmd
+      #   run: |
+      #     mkdir -p "C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLO~1\depends\x86_64"
+      #     curl -L https://dependencywalker.com/depends22_x64.zip -o depends.zip
+      #     tar -xf depends.zip -C "C:\Users\RUNNER~1\AppData\Local\Nuitka\Nuitka\Cache\DOWNLO~1\depends\x86_64"
+      #     del depends.zip
 
 
       - name: Create and Activate Virtual Environment (Unix)
@@ -48,19 +109,13 @@ jobs:
             ${{ runner.os }}-venv-
 
 
+
       - name: Install Python dependencies in Virtual Environment (Unix)
         if: matrix.os != 'windows-latest'
         run: |
           source ./.venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Build Executive in Virtual Environment (Unix)
-        if: matrix.os != 'windows-latest'
-        run: |
-          source ./.venv/bin/activate
-          pyside6-deploy main.py --init
-
 
       - name: Install Python dependencies in Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
@@ -70,12 +125,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+
+
+      - name: Build Executive in Virtual Environment (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          source ./.venv/bin/activate
+          pyside6-deploy main.py -c build_config/pysidedeploy-${{ matrix.arch }}-${{ matrix.arch }}.spec --force --verbose
+
       - name: Build Executive in Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
+          CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }} && ^
           .\.venv\Scripts\Activate && ^
-          pyside6-deploy main.py --init
+          pyside6-deploy main.py -c build_config/pysidedeploy-windows-${{ matrix.arch }}.spec --force --verbose
+
 
 
       - name: Upload Artifact (macOS)
@@ -84,7 +149,7 @@ jobs:
         with:
           name: build-output-macos-${{ matrix.arch }}
           path: |
-            ./*.spec
+            ./*.app
 
       - name: Upload Artifact (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -92,7 +157,7 @@ jobs:
         with:
           name: build-output-linux-${{ matrix.arch }}
           path: |
-            ./*.spec
+            ./*.bin
 
       - name: Upload Artifact (Windows)
         if: matrix.os == 'windows-latest'
@@ -100,4 +165,31 @@ jobs:
         with:
           name: build-output-windows-${{ matrix.arch }}
           path: |
-            ./*.spec
+            ./*.exe
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          body: |
+            This is a release for version ${{ env.VERSION }}.
+          draft: true  # 将发布设置为草稿
+          files: |
+            artifacts/build-output-macos-x64/*.app
+            artifacts/build-output-macos-arm64/*.app
+            artifacts/build-output-linux-x64/*.bin
+            artifacts/build-output-linux-arm64/*.bin
+            artifacts/build-output-windows-x64/*.exe
+            artifacts/build-output-windows-arm64/*.exe
