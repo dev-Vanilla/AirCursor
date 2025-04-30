@@ -21,7 +21,7 @@ icon = ./resources/imgs/icon.ico
 [python]
 
 # python path
-python_path = ./.venv\Scripts\python.exe
+python_path = ./.venv/Scripts/python.exe
 
 # python packages to install
 packages = Nuitka==2.6.8

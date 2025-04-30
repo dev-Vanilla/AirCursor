@@ -7,7 +7,7 @@ title = AirCursor-x64
 project_dir = .
 
 # source file entry point path. default = main.py
-input_file = /home/vanilla/Projects/AirCursor/main.py
+input_file = ./main.py
 
 # directory where the executable output is generated
 exec_directory = .
@@ -21,7 +21,7 @@ icon = ./resources/imgs/icon.svg
 [python]
 
 # python path
-python_path = ./.venv/bin/python3
+python_path = ./.venv/bin/python
 
 # python packages to install
 packages = Nuitka==2.6.8
