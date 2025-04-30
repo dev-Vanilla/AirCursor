@@ -132,7 +132,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           source ./.venv/bin/activate
-          pyside6-deploy -c build_config/pysidedeploy-${{ matrix.arch }}-${{ matrix.arch }}.spec
+          pyside6-deploy -c build_config/pysidedeploy-${{ matrix.os }}-${{ matrix.arch }}.spec
 
       - name: Build Executive in Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
