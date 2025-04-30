@@ -135,8 +135,7 @@ jobs:
           pyside6-deploy \
             -c build_config/pysidedeploy-${{ matrix.arch }}-${{ matrix.arch }}.spec \
             --force \
-            --verbose \
-            main.py
+            --verbose
 
       - name: Build Executive in Virtual Environment (Windows)
         if: matrix.os == 'windows-latest'
@@ -147,8 +146,7 @@ jobs:
           pyside6-deploy \
             -c build_config/pysidedeploy-windows-${{ matrix.arch }}.spec \
             --force \
-            --verbose \
-            main.py
+            --verbose
 
       
 
