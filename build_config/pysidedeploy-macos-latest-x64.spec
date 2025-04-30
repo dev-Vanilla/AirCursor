@@ -16,7 +16,7 @@ exec_directory = .
 project_file = 
 
 # application icon
-icon = ./resources/imgs/icon.svg
+icon = ./resources/imgs/icon.icns
 
 [python]
 
