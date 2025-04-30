@@ -16,7 +16,7 @@ exec_directory = .
 project_file = 
 
 # application icon
-icon = D:\a\AirCursor\AirCursor\resources/imgs/icon.svg
+icon = D:\a\AirCursor\AirCursor\resources/imgs/icon.ico
 
 [python]
 
