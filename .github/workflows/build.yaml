@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [windows-latest]
         arch: [x64, arm64]
 
 
@@ -161,6 +161,7 @@ jobs:
         run: |
           fpm -s dir -t deb \
               -n aircursor \
+              -a native \
               -v ${{ env.VERSION }} \
               --url "https://github.com/dev-Vanilla/AirCursor" \
               --description "Control your PC directly with your hands." \
@@ -181,6 +182,7 @@ jobs:
         run: |
           fpm -s dir -t rpm \
               -n aircursor \
+              -a native \
               -v ${{ env.VERSION }} \
               --url "https://github.com/dev-Vanilla/AirCursor" \
               --description "Control your PC directly with your hands." \
