@@ -3,9 +3,9 @@
 ;--------------------------------
 
 Name "AirCursor"
-OutFile "AirCursorInstaller-x86_64.exe"
+OutFile "AirCursorInstaller-arm64.exe"
 InstallDir "$PROGRAMFILES\AirCursor"
-Icon "../resources/imgs/icon.ico"        ; 设置应用图标
+Icon "./resources/imgs/icon.ico"        ; 设置应用图标
 ShowInstDetails show
 ShowUnInstDetails hide
 
@@ -34,7 +34,7 @@ Section "Main Application" SEC01
   SetOutPath "$INSTDIR"
 
   ; 拷贝主程序
-  File "AirCursor-x64.exe"
+  File "AirCursor-arm64.exe"
 
   ; 创建开始菜单快捷方式
   CreateDirectory "$STARTMENU\AirCursor"
