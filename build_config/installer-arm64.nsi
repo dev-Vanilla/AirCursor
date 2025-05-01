@@ -25,7 +25,6 @@ Page directory
 Page instfiles
 Page custom ShowFinishedPage
 
-
 ;--------------------------------
 ; 组件部分 - 主程序
 ;--------------------------------
@@ -35,7 +34,7 @@ Section "Main Application" SEC01
   SetOutPath "$INSTDIR"
 
   ; 拷贝主程序
-  File "AirCursor-arm64.exe"
+  File "../AirCursor-arm64.exe"
 
   ; 创建开始菜单快捷方式
   CreateDirectory "$STARTMENU\AirCursor"
