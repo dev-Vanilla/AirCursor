@@ -25,7 +25,6 @@ Page directory
 Page instfiles
 Page custom ShowFinishedPage
 
-UninstPage instfiles
 
 ;--------------------------------
 ; 组件部分 - 主程序
@@ -41,9 +40,6 @@ Section "Main Application" SEC01
   ; 创建开始菜单快捷方式
   CreateDirectory "$STARTMENU\AirCursor"
   CreateShortcut "$STARTMENU\AirCursor\AirCursor.lnk" "$INSTDIR\AirCursor.exe"
-
-  ; 写卸载器
-  WriteUninstaller "$INSTDIR\uninstall.exe"
 
 SectionEnd
 
@@ -75,27 +71,3 @@ Function ShowFinishedPage
 
   nsDialogs::Show
 FunctionEnd
-
-;--------------------------------
-; 卸载部分
-;--------------------------------
-
-Section "Uninstall"
-
-  ; 删除快捷方式
-  Delete "$STARTMENU\AirCursor\*.*"
-  RMDir "$STARTMENU\AirCursor"
-  Delete "$DESKTOP\AirCursor.lnk"
-
-  ; 删除应用程序文件
-  Delete "$INSTDIR\AirCursor.exe"
-  Delete "$INSTDIR\uninstall.exe"
-
-  ; 删除注册表项（如果有写入）
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AirCursor"
-  DeleteRegKey HKLM "Software\AirCursor"
-
-  ; 删除安装目录
-  RMDir "$INSTDIR"
-
-SectionEnd
