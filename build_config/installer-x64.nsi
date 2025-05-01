@@ -34,7 +34,7 @@ Section "Main Application" SEC01
   SetOutPath "$INSTDIR"
 
   ; 拷贝主程序
-  File "../main.py"
+  File "./main.py"
 
   ; 创建开始菜单快捷方式
   CreateDirectory "$STARTMENU\AirCursor"
