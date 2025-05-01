@@ -13,7 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         arch: [x64, arm64]
 
 
@@ -166,14 +167,14 @@ jobs:
               --maintainer "vanillayhd@outlook.com" \
               --license "AGPL" \
               ./AirCursor-${{ matrix.arch }}.bin=/usr/bin/AirCursor.bin \
-              .build_tmp/16.png=/usr/share/icons/hicolor/16x16/apps/aircursor.png \
-              .build_tmp/32.png=/usr/share/icons/hicolor/32x32/apps/aircursor.png \
-              .build_tmp/64.png=/usr/share/icons/hicolor/64x64/apps/aircursor.png \
-              .build_tmp/128.png=/usr/share/icons/hicolor/128x128/apps/aircursor.png \
-              .build_tmp/256.png=/usr/share/icons/hicolor/256x256/apps/aircursor.png \
-              .build_tmp/512.png=/usr/share/icons/hicolor/512x512/apps/aircursor.png \
-              .build_tmp/1024.png=/usr/share/icons/hicolor/1024x1024/apps/aircursor.png \
-              .build_tmp/AirCursor.desktop=/usr/share/applications/AirCursor.desktop
+              ./build_tmp/16.png=/usr/share/icons/hicolor/16x16/apps/aircursor.png \
+              ./build_tmp/32.png=/usr/share/icons/hicolor/32x32/apps/aircursor.png \
+              ./build_tmp/64.png=/usr/share/icons/hicolor/64x64/apps/aircursor.png \
+              ./build_tmp/128.png=/usr/share/icons/hicolor/128x128/apps/aircursor.png \
+              ./build_tmp/256.png=/usr/share/icons/hicolor/256x256/apps/aircursor.png \
+              ./build_tmp/512.png=/usr/share/icons/hicolor/512x512/apps/aircursor.png \
+              ./build_tmp/1024.png=/usr/share/icons/hicolor/1024x1024/apps/aircursor.png \
+              ./build_tmp/AirCursor.desktop=/usr/share/applications/AirCursor.desktop
 
       - name: Create RPM file (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -186,14 +187,14 @@ jobs:
               --maintainer "vanillayhd@outlook.com" \
               --license "AGPL" \
               ./AirCursor-${{ matrix.arch }}.bin=/usr/bin/AirCursor.bin \
-              .build_tmp/16.png=/usr/share/icons/hicolor/16x16/apps/aircursor.png \
-              .build_tmp/32.png=/usr/share/icons/hicolor/32x32/apps/aircursor.png \
-              .build_tmp/64.png=/usr/share/icons/hicolor/64x64/apps/aircursor.png \
-              .build_tmp/128.png=/usr/share/icons/hicolor/128x128/apps/aircursor.png \
-              .build_tmp/256.png=/usr/share/icons/hicolor/256x256/apps/aircursor.png \
-              .build_tmp/512.png=/usr/share/icons/hicolor/512x512/apps/aircursor.png \
-              .build_tmp/1024.png=/usr/share/icons/hicolor/1024x1024/apps/aircursor.png \
-              .build_tmp/AirCursor.desktop=/usr/share/applications/AirCursor.desktop
+              ./build_tmp/16.png=/usr/share/icons/hicolor/16x16/apps/aircursor.png \
+              ./build_tmp/32.png=/usr/share/icons/hicolor/32x32/apps/aircursor.png \
+              ./build_tmp/64.png=/usr/share/icons/hicolor/64x64/apps/aircursor.png \
+              ./build_tmp/128.png=/usr/share/icons/hicolor/128x128/apps/aircursor.png \
+              ./build_tmp/256.png=/usr/share/icons/hicolor/256x256/apps/aircursor.png \
+              ./build_tmp/512.png=/usr/share/icons/hicolor/512x512/apps/aircursor.png \
+              ./build_tmp/1024.png=/usr/share/icons/hicolor/1024x1024/apps/aircursor.png \
+              ./build_tmp/AirCursor.desktop=/usr/share/applications/AirCursor.desktop
 
 
       - name: Create EXE installer (Windows)
