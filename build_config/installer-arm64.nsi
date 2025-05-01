@@ -5,7 +5,7 @@
 Name "AirCursor"
 OutFile "AirCursorInstaller-arm64.exe"
 InstallDir "$PROGRAMFILES\AirCursor"
-Icon "resources/imgs/icon.ico"        ; 设置应用图标
+Icon "../resources/imgs/icon.ico"        ; 设置应用图标
 ShowInstDetails show
 ShowUnInstDetails hide
 
