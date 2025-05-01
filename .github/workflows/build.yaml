@@ -149,8 +149,8 @@ jobs:
             --window-pos 200 120 \
             --window-size 800 400 \
             --icon-size 100 \
-            --icon "AirCursor.app" 200 190 \
-            --hide-extension "AirCursor.app" \
+            --icon "AirCursor-${{ matrix.arch }}.app" 200 190 \
+            --hide-extension "AirCursor-${{ matrix.arch }}.app" \
             --app-drop-link 600 185 \
             "AirCursor-macos-${{ matrix.arch }}.dmg" \
             "AirCursor-${{ matrix.arch }}.app"
