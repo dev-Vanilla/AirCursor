@@ -249,6 +249,7 @@ jobs:
 
   release:
     needs: build
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifacts
@@ -257,17 +258,16 @@ jobs:
           path: artifacts
 
       - name: Create Draft Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           body: |
             This is a release for version ${{ env.VERSION }}.
           draft: true  # 将发布设置为草稿
           files: |
-            artifacts/build-output-macos-x64/*.app
-            artifacts/build-output-macos-arm64/*.app
             artifacts/build-output-macos-x64/*.dmg
             artifacts/build-output-macos-arm64/*.dmg
             artifacts/build-output-linux-x64/*.bin
