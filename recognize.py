@@ -4,7 +4,9 @@ import mediapipe as mp
 from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision as mp_vision
 from mediapipe.framework.formats import landmark_pb2
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, QFile, QIODevice
+from resources import rc_resources
+
 
 
 
@@ -25,7 +27,10 @@ class Recognizer(QObject):
 
     def __init__(self, model_path, settings, event_manager):
         super().__init__()
-        self.model_path = model_path
+        model_file = QFile(model_path)
+        if not model_file.open(QIODevice.ReadOnly):  # 必须先 open!
+            raise IOError(f"无法打开 Qt 资源: {model_path}")
+        self.model_data = bytes(model_file.readAll().data())
         self.settings = settings  # 保存 QSettings 实例
         self.event_manager = event_manager
 
@@ -310,7 +315,7 @@ class Recognizer(QObject):
             HandLandmarkerOptions = mp_vision.HandLandmarkerOptions
             VisionRunningMode = mp_vision.RunningMode
             options = HandLandmarkerOptions(
-                base_options=BaseOptions(model_asset_path=self.model_path),
+                base_options=BaseOptions(model_asset_buffer=self.model_data,),
                 running_mode=VisionRunningMode.LIVE_STREAM,
                 result_callback=self.hand_recognition_callback
             )

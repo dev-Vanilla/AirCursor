@@ -2,7 +2,7 @@ import os
 import sys  # Only needed for access to command line arguments
 import threading
 import queue
-from PySide6.QtCore import Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo
+from PySide6.QtCore import Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo, QUrl
 from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtSvgWidgets import QSvgWidget  # 正确导入 QSvgWidget
