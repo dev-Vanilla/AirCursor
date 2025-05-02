@@ -27,6 +27,9 @@ We're gonna use a pointing device that we're all born with — our fingers."</em
 <p align="center">— Steve Jobs, Macworld 2007: The iPhone Introduction</p>
 
 
+![AirCursor Demo](demo.gif)
+
+
 ## Overview
 
 For decades, the mouse, touchpad, keyboard, and screen have dominated human-computer interaction. While these tools are effective, prolonged use can be tiresome, and they may feel limiting in an era of rapid technological advancement. What if you could control your computer with simple hand gestures in the air? Inspired by this vision—and recent AR innovations—I created **AirCursor**, a gesture-controlled mouse application.
