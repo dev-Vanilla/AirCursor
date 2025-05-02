@@ -9,7 +9,7 @@ style="margin: 0 10px;" >中文</a>
 </p>
 
 <p align="center">
-    <a href="https://github.com/dev-Vanilla/AirCursor/releases"><img src="https://img.shields.io/github/v/release/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Release"></a>
+    <a href="https://github.com/dev-Vanilla/AirCursor/releases"><img src="https://img.shields.io/github/v/release/dev-Vanilla/AirCursor?include_prereleases&style=flat-square&logo=github" alt="Release"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/stargazers"><img src="https://img.shields.io/github/stars/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="Stars"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/actions/workflows/build.yaml"><img src="https://img.shields.io/github/actions/workflow/status/dev-Vanilla/AirCursor/build.yaml?style=flat-square&logo=github" alt="Build"></a>
     <a href="https://github.com/dev-Vanilla/AirCursor/blob/main/LICENSE"><img src="https://img.shields.io/github/license/dev-Vanilla/AirCursor?style=flat-square&logo=github" alt="License"></a>

@@ -262,8 +262,8 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/release')  # 仅在 release 分支上执行
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
           body: |
             This is a release for version ${{ env.VERSION }}.
           draft: true  # 将发布设置为草稿
