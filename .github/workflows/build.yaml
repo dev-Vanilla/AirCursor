@@ -6,7 +6,7 @@ on:
       - release  # 仅当推送代码到 release 分支时触发
 
 env:
-  VERSION: "0.0.2-beta"  # 全局变量：版本号
+  VERSION: "0.0.3-beta"  # 全局变量：版本号
 
 jobs:
   build:
