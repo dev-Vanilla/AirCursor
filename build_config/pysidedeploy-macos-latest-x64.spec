@@ -61,7 +61,7 @@ plugins =
 # usage description for permissions requested by the app as found in the info.plist file
 # of the app bundle. comma separated
 # eg = extra_args = --show-modules --follow-stdlib
-macos.permissions = 
+macos.permissions = "NSAccessibilityUsageDescription:This app requires access to monitor mouse events for accessibility purposes.,NSCameraUsageDescription:This app requires access to the camera for gesture detection."
 
 # mode of using nuitka. accepts standalone or onefile. default = onefile
 mode = onefile
