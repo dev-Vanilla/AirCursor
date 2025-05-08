@@ -2,8 +2,8 @@ import os
 import sys  # Only needed for access to command line arguments
 import threading
 import queue
-from PySide6.QtCore import Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo, QUrl
-from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent
+from PySide6.QtCore import Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo, QUrl, QEvent, QTimer
+from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent, QStyleHints, QGuiApplication, QPalette
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtSvgWidgets import QSvgWidget  # 正确导入 QSvgWidget
 from PySide6.QtWidgets import (
@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
 
         self.isRecognizing = False  # 是否在控制鼠标
         self.isWindowVisible = False  # 决定是否更新视频帧
+        self.is_updating_color_scheme = False  # 防止重复更新托盘图标
 
         self.event_manager = event_manager
 
@@ -160,14 +161,41 @@ class MainWindow(QMainWindow):
             3000  # 消息显示时间（毫秒）
         )
 
+
+    def event(self, event):
+        if event.type() == QEvent.Type.ApplicationPaletteChange:
+            if not self.is_updating_color_scheme:
+                self.is_updating_color_scheme = True
+                self.update_tray_icon()
+                QTimer.singleShot(500, lambda: setattr(self, 'is_updating_color_scheme', False))
+            return True
+        return super().event(event)
+
+
     def update_tray_icon(self):
         """根据当前主题更新托盘图标"""
-        # 根据系统主题选择图标颜色
-        app_palette = QApplication.palette()
-        if app_palette.window().color().lightness() > 128:  # 浅色模式
-            icon_color = QColor(Qt.black)  # 黑色图标
-        else:  # 深色模式
-            icon_color = QColor(Qt.white)  # 白色图标
+
+        app = QApplication.instance()
+
+        # 获取系统主题
+        style_hints = QGuiApplication.styleHints()  # 使用 QGuiApplication 获取 QStyleHints 实例
+
+        color_scheme = style_hints.colorScheme()
+        print(color_scheme)
+
+        # 创建调色板对象
+        palette = QPalette()
+
+        if color_scheme == Qt.ColorScheme.Light:
+            icon_color = QColor(Qt.black)  # 浅色模式用黑色图标
+            # 设置窗口背景色为白色
+            palette.setColor(QPalette.Window, QColor(Qt.white))
+        else:
+            icon_color = QColor(Qt.white)  # 深色模式用白色图标
+            palette.setColor(QPalette.Window, QColor(Qt.black))
+
+        # 应用调色板
+        app.setPalette(palette)
 
         # 加载 SVG 图标并动态着色
         renderer = QSvgRenderer(":/resources/imgs/logo.svg")  # 替换为你的 SVG 文件路径
@@ -524,6 +552,8 @@ def main():
     # You need one (and only one) QApplication instance per application.
     app = QApplication(sys.argv)  # Pass in sys.argv to allow command line arguments for your app.
     # If you know you won't use command line arguments QApplication([]) works too.
+
+    # app.setStyle("Windows")
 
 
     translator = QTranslator(app)
