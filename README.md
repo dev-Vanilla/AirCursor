@@ -5,7 +5,7 @@ style="margin: 0 10px;" >中文</a>
 </h4>
 
 <p align="center">
-    <img src="./resources/imgs/icon.svg" width=169/>
+    <img src="./resources/imgs/icon.png" width=169/>
 </p>
 
 <p align="center">
