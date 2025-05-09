@@ -2,10 +2,16 @@ import os
 import sys  # Only needed for access to command line arguments
 import threading
 import queue
-from PySide6.QtCore import Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo, QUrl, QEvent, QTimer
-from PySide6.QtGui import QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent, QStyleHints, QGuiApplication, QPalette
+from PySide6.QtCore import (
+    Qt, QSettings, QSize, QTranslator, QLocale, QLibraryInfo,
+    QUrl, QEvent, QTimer
+)
+from PySide6.QtGui import (
+    QIcon, QImage, QPixmap, QColor, QPainter, QAction, QCloseEvent,
+    QStyleHints, QGuiApplication, QPalette
+)
 from PySide6.QtSvg import QSvgRenderer
-from PySide6.QtSvgWidgets import QSvgWidget  # 正确导入 QSvgWidget
+from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QSystemTrayIcon, QMenu,
     QVBoxLayout, QHBoxLayout, QGridLayout, QStackedWidget,
@@ -19,46 +25,45 @@ from translations import rc_translations
 ORGANIZATION_NAME = "aircursor"
 APPLICATION_NAME = "AirCursor"
 
-# 定义默认配置
+# 默认配置
 DEFAULT_CONFIG = {
-    "screen_width": 1920,  # 默认屏幕宽度
-    "screen_height": 1080,  # 默认屏幕高度
+    "screen_width": 1920,
+    "screen_height": 1080,
     "scale": 1.0,  # 默认 HiDPI 缩放比例（浮点数）
-    "camera_width": 480,  # 默认屏幕宽度
-    "camera_height": 270,  # 默认屏幕高度
-    "fps": 30,  # 默认 FPS
+    "camera_width": 480,
+    "camera_height": 270,
+    "fps": 30,
     "scroll_speed": 1,
     "click_sensitivity": 50,
     "move_sensitivity": 90
 }
 
-
 class EventManager:
     def __init__(self):
         self.pause_event = threading.Event()
 
-event_manager = EventManager()  # 全局事件管理器
+event_manager = EventManager()  # 创建全局事件管理器
 
 class MainWindow(QMainWindow):
+""" 主窗口 """
     def __init__(self):
-        # When you subclass a Qt class you must always call the super __init__ function to allow Qt to set up the object.
+        # When you subclass a Qt class you must always call the
+        # super __init__ function to allow Qt to set up the object.
         super().__init__()
         self.setWindowTitle("AirCursor")
-        self.setWindowIcon(QIcon(":/resources/imgs/icon.svg"))  # 设置窗口图标
-        self.settings = QSettings(ORGANIZATION_NAME, APPLICATION_NAME)  # 初始化 QSettings
+        self.setWindowIcon(QIcon(":/resources/imgs/icon.svg"))
+        # 初始化 QSettings
+        self.settings = QSettings(ORGANIZATION_NAME, APPLICATION_NAME)
         self.initialize_settings()  # 加载配置（如果不存在则使用默认值）
-
+        # Flags
         self.isRecognizing = False  # 是否在控制鼠标
         self.isWindowVisible = False  # 决定是否更新视频帧
         self.is_updating_color_scheme = False  # 防止重复更新托盘图标
-
+        # 线程控制
         self.event_manager = event_manager
-
-        # self.pause_event = threading.Event()  # 用于暂停/恢复线程
-        # self.pause_event.clear()  # 默认不使线程运行
         self.event_manager.pause_event.clear()  # 默认不使线程运行
 
-        # 初始化 Controller
+        # 初始化 Controller & Recognizer
         self.controller = Controller(self.settings)
         self.recognizer = Recognizer(
             model_path = ":/resources/model/hand_landmarker.task",
@@ -66,29 +71,29 @@ class MainWindow(QMainWindow):
             event_manager = self.event_manager
         )
 
-        # self.recognizer.hand_data_signal.connect(self.mouse_control_thread)
         self.recognizer.frame_signal.connect(self.update_livestream_thread)
 
-        # Main Layout
-        main_layout = QHBoxLayout()
+        # 初始化托盘图标
+        self.initialize_tray_icon()
 
+        """ 窗口UI"""
+        main_layout = QHBoxLayout()
         # 侧边栏
         sidebar = QVBoxLayout()
         buttons = [self.tr("Welcome"), self.tr("LiveStream"), self.tr("Settings"), self.tr("About")]
         self.buttons = []
         for text in buttons:
             button = QPushButton(text)
-            button.setFixedWidth(100)  # 设置按钮宽度
+            # button.setFixedWidth(100)
             button.clicked.connect(self.create_page_switcher(text))
             sidebar.addWidget(button)
             self.buttons.append(button)
         sidebar.addStretch()  # 添加弹性空间，使按钮靠上对齐
-
         # 内容区域
         self.stacked_widget = QStackedWidget()
         self.pages = {}
-
         # 创建页面
+        # TODO: 这段写得太史
         for page_name in buttons:
             if page_name == self.tr("Welcome"):
                 page = self.create_main_page()
@@ -102,30 +107,23 @@ class MainWindow(QMainWindow):
                 # 配置页面
                 page = self.create_config_page()
             else:
-                # 其他页面
+                # TODO:其他未完成的页面
                 page = QLabel(f"这是 {page_name} 页面的内容")
                 page.setAlignment(Qt.AlignCenter)
-
             self.pages[page_name] = page
             self.stacked_widget.addWidget(page)
-
-
         # 将侧边栏和内容区域添加到主布局
         main_layout.addLayout(sidebar)
         main_layout.addWidget(self.stacked_widget)
 
-        self.initialize_tray_icon()
-
-        # Set Central Widget
+        # Set the central widget of the Window.
         container = QWidget()
         container.setLayout(main_layout)
-        self.setCentralWidget(container)  # Set the central widget of the Window.
+        self.setCentralWidget(container)
 
     def initialize_tray_icon(self):
         # Create a tray icon
         self.tray_icon = QSystemTrayIcon(self)
-        # self.tray_icon.setIcon(QIcon("resources/icon.png"))  # 替换为你的图标路径
-        # self.tray_icon.setIcon(QIcon("resources/mouse-wireless-filled-symbolic.svg"))
         self.update_tray_icon()  # 动态更新图标以适配主题
         self.tray_icon.setToolTip("AirCursor")
 
@@ -161,8 +159,8 @@ class MainWindow(QMainWindow):
             3000  # 消息显示时间（毫秒）
         )
 
-
     def event(self, event):
+        """ 监听系统主题变化 """
         if event.type() == QEvent.Type.ApplicationPaletteChange:
             if not self.is_updating_color_scheme:
                 self.is_updating_color_scheme = True
@@ -171,43 +169,25 @@ class MainWindow(QMainWindow):
             return True
         return super().event(event)
 
-
     def update_tray_icon(self):
         """根据当前主题更新托盘图标"""
-
-        app = QApplication.instance()
-
         # 获取系统主题
-        style_hints = QGuiApplication.styleHints()  # 使用 QGuiApplication 获取 QStyleHints 实例
-
+        style_hints = QGuiApplication.styleHints()
         color_scheme = style_hints.colorScheme()
-        print(color_scheme)
-
-        # 创建调色板对象
-        palette = QPalette()
-
+        # print(color_scheme)
         if color_scheme == Qt.ColorScheme.Light:
             icon_color = QColor(Qt.black)  # 浅色模式用黑色图标
-            # 设置窗口背景色为白色
-            palette.setColor(QPalette.Window, QColor(Qt.white))
         else:
             icon_color = QColor(Qt.white)  # 深色模式用白色图标
-            palette.setColor(QPalette.Window, QColor(Qt.black))
-
-        # 应用调色板
-        app.setPalette(palette)
-
         # 加载 SVG 图标并动态着色
         renderer = QSvgRenderer(":/resources/imgs/logo.svg")  # 替换为你的 SVG 文件路径
         pixmap = QPixmap(QSize(256, 256))  # 高分辨率图标
         pixmap.fill(Qt.transparent)
-
         painter = QPainter(pixmap)
         renderer.render(painter)
         painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
         painter.fillRect(pixmap.rect(), icon_color)
         painter.end()
-
         # 设置托盘图标
         self.tray_icon.setIcon(QIcon(pixmap))
 
@@ -256,12 +236,12 @@ class MainWindow(QMainWindow):
             return main_page
 
     def create_config_page(self):
-        """创建配置页面布局"""
+        """配置页面"""
         config_page = QWidget()
         # Configuration Section
         config_layout = QVBoxLayout()
 
-        # IMPORTANT!!!!! QSettings 返回值通常为字符串（即使保存的是数字），因此需要进行类型转换
+        # IMPORTANT!! QSettings 返回值通常为字符串（即使保存的是数字），因此需要进行类型转换
 
         # Screen Resolution Input
         screen_resolution_layout = QHBoxLayout()
@@ -330,7 +310,6 @@ class MainWindow(QMainWindow):
         scroll_layout.addWidget(self.scroll_label)
         self.scroll_slider.valueChanged.connect(self.update_scroll)
 
-
         sensitivity_layout = QHBoxLayout()
 
         # 点击灵敏度
@@ -357,10 +336,8 @@ class MainWindow(QMainWindow):
         move_thres_layout.addWidget(self.move_sensitivity_label)
         self.move_thres_dial.valueChanged.connect(self.update_move_sensitivity)
 
-
         sensitivity_layout.addLayout(click_thres_layout)
         sensitivity_layout.addLayout(move_thres_layout)
-
 
         config_layout.addLayout(screen_resolution_layout)
         config_layout.addLayout(scale_layout)
@@ -402,7 +379,6 @@ class MainWindow(QMainWindow):
 
         self.close()
         QApplication.quit()
-
 
     def start_stop_recognition(self):
         if self.isRecognizing:
@@ -502,7 +478,6 @@ class MainWindow(QMainWindow):
         self.recognizer.update_parameters()
         self.controller.update_parameters()  # 更新 Controller 参数
 
-
     def mouse_control_thread(self):
         while self.isRecognizing:
             hand_data = self.recognizer.hand_data
@@ -547,14 +522,12 @@ class MainWindow(QMainWindow):
         except queue.Empty:
             pass  # 如果队列为空，跳过本次更新
 
-
 def main():
     # You need one (and only one) QApplication instance per application.
     app = QApplication(sys.argv)  # Pass in sys.argv to allow command line arguments for your app.
     # If you know you won't use command line arguments QApplication([]) works too.
 
     # app.setStyle("Windows")
-
 
     translator = QTranslator(app)
     if translator.load(QLocale.system(), 'qtbase', '_', QLibraryInfo.path(QLibraryInfo.TranslationsPath)):
@@ -563,11 +536,9 @@ def main():
     if translator.load(QLocale.system(), 'main', '_', ':/translations'):
         app.installTranslator(translator)
 
-
-
     # Create a Qt MainWindow, which will be our window.
     window = MainWindow()
-    # window.show()  # IMPORTANT!!!!! Windows are hidden by default.
+    # window.show()  # IMPORTANT!!! Windows are hidden by default.
 
     # Start the event loop.
     app.exec()
