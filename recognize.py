@@ -7,9 +7,6 @@ from mediapipe.framework.formats import landmark_pb2
 from PySide6.QtCore import QObject, Signal, QFile, QIODevice
 from resources import rc_resources
 
-
-
-
 # CAMERA_WIDTH = 480
 # CAMERA_HEIGHT = 320
 # CAMERA_FPS = 30
@@ -22,7 +19,6 @@ COOLDOWN_FRAME = 5
 SCALE = 1.75
 
 class Recognizer(QObject):
-    # hand_data_signal = Signal(dict)  # 用于传递手势数据
     frame_signal = Signal(object)   # 用于传递视频帧
 
     def __init__(self, model_path, settings, event_manager):
@@ -42,6 +38,25 @@ class Recognizer(QObject):
             "is_pressing": False,
             "clicking": False
         }
+
+        """
+        hand_data = {
+            "status": "idle", "click", "drag", scroll", "maximize", "minimize", "close"
+            "target_x": 0,
+            "target_y": 0,
+            # "is_pressing": False,
+            "pressing": False,
+            "clicking": False (click & cooldown_time & pressing)
+            "dragging": False
+            "scroll": 0 (Floating Point, accumulate and int elsewhere)
+            "maximize": False (status = "maximize")
+            "minimize": False (status = "minimize")
+            "close": False (status = "close")
+        }
+
+        # 放入一个queue，形成上下文，让机器学习判断。
+        """
+
         self.latest_detection_result = None
         self.last_valid_target = {
             "target_x": 0,
